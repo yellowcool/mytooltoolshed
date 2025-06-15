@@ -1,0 +1,206 @@
+/* --- Google Font Import --- */
+/* @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@700&display=swap'); */
+
+/* --- CSS 变量定义 --- */
+:root {
+    --primary-color: #1A535C;
+    --secondary-color: #F7B538;
+    --background-color: #FFFFFF;
+    --text-color: #333333;
+    --heading-font: 'Montserrat', sans-serif;
+    --body-font: 'Lato', sans-serif;
+}
+
+/* --- 全局重置与基础样式 --- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--body-font);
+    color: var(--text-color);
+    background-color: var(--background-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* --- 标题与文本样式 --- */
+h1, h2, h3 {
+    font-family: var(--heading-font);
+    color: var(--primary-color);
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+/* --- 页头 (Header) --- */
+.header {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.header__title {
+    font-size: 2.5rem;
+    color: var(--background-color);
+    margin-bottom: 0.5rem;
+}
+
+.header__subtitle {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- 主内容区域 (Main Content) --- */
+.main-content {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+/* --- 搜索区域 (Search Section) --- */
+.search-section {
+    margin-bottom: 3rem;
+}
+
+.search-bar {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.search-bar__input {
+    flex-grow: 1;
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-family: var(--body-font);
+}
+
+.search-bar__input:focus {
+    outline: 2px solid var(--secondary-color);
+}
+
+.search-bar__button {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-family: var(--heading-font);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-bar__button:hover {
+    background-color: #123c42; /* 主色的深色变体 */
+}
+
+/* --- AI 工具列表 (Tools Section) --- */
+.tools-grid {
+    display: grid;
+    gap: 1.5rem;
+    /* --- 关键改动：解决卡片拉伸问题 --- */
+    /* 这会创建尽可能多的列，每列最小350px，最大1fr，自动填充空间 */
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+.tool-card {
+    display: flex; /* 使用flex布局以更好地对齐内容 */
+    flex-direction: column;
+    background-color: var(--background-color);
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color);
+}
+
+.tool-card__name {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rank-badge {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.9rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+
+.tool-card__description {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    flex-grow: 1; /* 让描述部分占据多余空间，将标签推到底部 */
+}
+
+.tool-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background-color: #e9ecef; /* 使用更柔和的标签颜色 */
+    color: var(--text-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* --- 加载指示器样式 --- */
+.loading-indicator {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+/* --- 页脚 (Footer) --- */
+.footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* --- 响应式设计 (Media Queries) --- */
+/* 因为使用了 auto-fill，大部分媒体查询不再强制需要，但保留一个用于调整移动端最小宽度 */
+@media (max-width: 400px) {
+    .tools-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
