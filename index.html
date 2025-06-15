@@ -3,288 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>赛博朋克产品展示</title>
+    <title>The Best AI Tools Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* --- 基础和背景设置 --- */
-        :root {
-            --dark-bg: #0a031a; /* 深紫色背景 */
-            --primary-glow: #ff00ff; /* 亮粉色 */
-            --secondary-glow: #00ffff; /* 青色 */
-            --text-color: #e0e0e0;
-            --glass-bg: rgba(22, 9, 47, 0.55); /* 磨砂玻璃背景色 */
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 255, 255, 0.2), transparent 30%),
-                radial-gradient(circle at 85% 30%, rgba(255, 0, 255, 0.2), transparent 30%),
-                /* 添加细微的网格图案 */
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
-            font-family: 'Noto Sans SC', sans-serif;
-            color: var(--text-color);
-            overflow-x: hidden;
-            padding: 2rem;
-            letter-spacing: 0.5px; /* 调整中文间距 */
-        }
-
-        /* --- 标题和主要布局 --- */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 0;
-        }
-
-        .main-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 4rem; /* 增加主标题和第一个分类的间距 */
-            background: linear-gradient(90deg, var(--secondary-glow), var(--primary-glow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-fill-color: transparent;
-            text-shadow: 
-                0 0 5px var(--secondary-glow),
-                0 0 10px var(--secondary-glow),
-                0 0 20px var(--primary-glow),
-                0 0 30px var(--primary-glow);
-            animation: flicker 3s infinite alternate;
-        }
-        
-        @media (max-width: 768px) {
-            .main-title {
-                font-size: 2.5rem;
-            }
-        }
-        
-        /* --- 分类模块样式 --- */
-        .category-section {
-            margin-bottom: 4rem;
-        }
-
-        .category-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--secondary-glow);
-            text-shadow: 0 0 8px var(--secondary-glow);
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid;
-            /* 霓虹渐变下划线 */
-            border-image: linear-gradient(90deg, var(--secondary-glow), transparent 60%) 1;
-        }
-        
-        @media (max-width: 768px) {
-            .category-title {
-                font-size: 1.8rem;
-            }
-        }
-
-        /* --- 产品网格布局 --- */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        /* --- 产品卡片设计 --- */
-        .product-card {
-            background: var(--glass-bg);
-            border: 2px solid;
-            border-image: linear-gradient(45deg, var(--secondary-glow), var(--primary-glow)) 1;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), 0 0 15px rgba(255, 0, 255, 0.3);
-            border-radius: 15px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden; /* 用于光泽扫过效果 */
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .product-grid .product-card:nth-child(2n) { animation-delay: -3s; }
-        .product-grid .product-card:nth-child(3n) { animation-delay: -1.5s; }
-        .product-grid .product-card:nth-child(4n) { animation-delay: -4.5s; }
-
-
-        .product-card:hover {
-            transform: translateY(-15px) scale(1.03);
-            box-shadow: 0 0 25px var(--secondary-glow), 0 0 25px var(--primary-glow);
-        }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 70%;
-            height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg);
-            transition: left 0.8s ease;
-        }
-
-        .product-card:hover::before {
-            left: 150%;
-        }
-
-        .card-category {
-            background: linear-gradient(90deg, var(--secondary-glow), var(--primary-glow));
-            color: var(--dark-bg);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            display: inline-block;
-            margin-bottom: 1rem;
-            text-shadow: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .card-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.75rem;
-            color: #fff;
-            font-weight: 700;
-            text-shadow: 0 0 3px var(--secondary-glow);
-        }
-
-        .card-description {
-            font-size: 1rem;
-            line-height: 1.8; /* 优化中文行高 */
-            opacity: 0.85;
-        }
-
-        /* --- 动画关键帧 --- */
-        @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% {
-                text-shadow:
-                    0 0 4px var(--secondary-glow),
-                    0 0 10px var(--secondary-glow),
-                    0 0 18px var(--primary-glow),
-                    0 0 28px var(--primary-glow);
-            }
-            20%, 24%, 55% {
-                text-shadow: none;
-            }
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1 class="main-title">AI 产品矩阵</h1>
-        <div id="productSectionsContainer">
-            <!-- 分类模块将由JavaScript动态生成 -->
+    <header class="header">
+        <div class="container">
+            <h1 class="header__title">The Best AI Tools Hub</h1>
+            <p class="header__subtitle">发现、探索并利用最前沿的人工智能工具</p>
         </div>
-    </div>
+    </header>
 
-    <script>
-        // --- AI产品分类完整信息 ---
-        const productData = [
-            { category: "AI游戏", name: "星之旅途", description: "可记录与AI实时通话的游戏，回放具有情感节点" },
-            { category: "AI游戏", name: "84（未命名）", description: "通过单张照片生成3D世界，环境可智能响应用户交互" },
-            { category: "AI游戏", name: "A游戏源", description: "用截图生成后续场景，支持角色动作预定义" },
-            { category: "AI游戏", name: "Inworld AI", description: "创造接近人类感知的AI角色（对话/行为/交互）" },
-            { category: "AI求职招聘工具", name: "未来历加", description: "AI全流程求职辅助（简历优化→面试准备），付费模式：基础免费+订阅" },
-            { category: "AI求职招聘工具", name: "多翼航", description: "企业级面试模拟训练，付费模式：部分免费+订阅" },
-            { category: "AI求职招聘工具", name: "Moka", description: "招聘SaaS系统（职位发布→视频面试全流程），付费模式：免费试用+订阅" },
-            { category: "端侧AI", name: "90（未命名）", description: "全场景智能资源调度与情景模拟，支持物联网联动" },
-            { category: "端侧AI", name: "宝讯OS", description: "首款深度集成大模型的手机操作系统" },
-            { category: "端侧AI", name: "OriginOS", description: "功能未描述" },
-            { category: "端侧AI", name: "ColorOS", description: "融合大模型离线功能（通话降噪/AI翻译等），多场景实用性强" },
-            { category: "端侧AI学习", name: "Ray-Ban Meta AI", description: "绿框版智能眼镜" },
-            { category: "端侧AI学习", name: "95（未命名）", description: "语音助手+百科+图像功能，支持中文知识图谱，付费模式：免费+订阅" },
-            { category: "AI智驾", name: "华为AOS", description: "多传感器融合感知方案，汽车软硬件深度集成" },
-            { category: "AI智驾", name: "特斯拉FSD", description: "纯视觉高阶智驾方案（海外成熟）" },
-            { category: "AI智驾", name: "Apollo", description: "L4级城市自动驾驶（高精度感知/安全冗余）" },
-            { category: "AI智驾", name: "Waymo", description: "自动驾驶领域头部企业" },
-            { category: "AI智驾", name: "小马智行", description: "国内首批无人Robotaxi收费运营企业" },
-            { category: "AI法律助手", name: "格物法律", description: "多维度预算对比+风险可视化，支持情景智能补全，付费模式：免费+订阅" },
-            { category: "AI法律助手", name: "通义法章", description: "智能对话+法律文书生成，内置多模态案例检索库" },
-            { category: "AI教育", name: "快对", description: "K12学习工具（作文辅导/习题解析），付费模式：基础免费+订阅" },
-            { category: "AI教育", name: "英马AI学", description: "2-8岁儿童AI课程，基于行为数据自适应调整学习路径" },
-            { category: "AI翻译", name: "105（未命名）", description: "接近专家水平的纯音频翻译" },
-            { category: "AI翻译", name: "网易有道AI翻译", description: "高精度多语种翻译+阅读助手导航" },
-            { category: "具身智能", name: "宇树机器人", description: "全地形运动控制（动态平衡/复杂地形适应）" },
-            { category: "具身智能", name: "骁元机器人", description: "VILLA架构通用机器人，支持跨平台任务部署" },
-            { category: "具身智能", name: "云深处机器人", description: "环境强适应性算法（安防巡检/电力运维场景）" },
-            { category: "具身智能", name: "钢河通用机器人", description: "轮式机器人专家（灵巧抓取/精密操作）" },
-            { category: "具身智能", name: "众擎机器人", description: "全球首个无人机器人航空群，强化学习驱动环境适应" }
-        ];
+    <main class="main-content">
+        <div class="container">
+            <section class="search-section">
+                <h2 class="section-title">搜索工具</h2>
+                <form class="search-bar" role="search">
+                    <input type="search" id="searchInput" class="search-bar__input" placeholder="在 300+ 工具中按名称、描述或标签实时搜索...">
+                    <button type="submit" class="search-bar__button">搜索</button>
+                </form>
+            </section>
 
-        // --- 按分类动态生成产品模块的函数 ---
-        function populateProducts() {
-            const container = document.getElementById('productSectionsContainer');
-            
-            // 1. 将数据按类别分组
-            const groupedData = productData.reduce((acc, product) => {
-                const category = product.category;
-                if (!acc[category]) {
-                    acc[category] = [];
-                }
-                acc[category].push(product);
-                return acc;
-            }, {});
+            <section class="tools-section">
+                <h2 class="section-title">精选 AI 工具</h2>
+                <div id="toolsGrid" class="tools-grid">
+                    </div>
+                <div id="loadingIndicator" class="loading-indicator" style="display: none;">正在加载...</div>
+            </section>
+        </div>
+    </main>
 
-            // 2. 为每个类别创建并填充模块
-            for (const category in groupedData) {
-                // 创建模块容器
-                const section = document.createElement('section');
-                section.className = 'category-section';
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 The Best AI Tools Hub. 保留所有权利。</p>
+        </div>
+    </footer>
 
-                // 创建分类标题
-                const title = document.createElement('h2');
-                title.className = 'category-title';
-                title.textContent = category;
-                section.appendChild(title);
-
-                // 创建该分类的产品网格
-                const grid = document.createElement('div');
-                grid.className = 'product-grid';
-
-                // 填充产品卡片
-                groupedData[category].forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <div class="card-category">${product.category}</div>
-                        <h2 class="card-title">${product.name}</h2>
-                        <p class="card-description">${product.description}</p>
-                    `;
-                    grid.appendChild(card);
-                });
-                
-                section.appendChild(grid);
-
-                // 将完整的分类模块添加到主容器中
-                container.appendChild(section);
-            }
-        }
-
-        // 页面加载完成后执行函数
-        document.addEventListener('DOMContentLoaded', populateProducts);
-    </script>
-
+    <script src="js/main.js"></script>
 </body>
 </html>
