@@ -1,4 +1,1 @@
-User-agent: *
-Allow: /
 
-Sitemap: https://your-website-url.pages.dev/sitemap.xml
