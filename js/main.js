@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ITEMS_PER_PAGE = 12;
     // Set the language for the data you want to display.
     // Change to 'English' when you have English data in Supabase.
-    const TARGET_LANGUAGE = 'Chinese';
+    const TARGET_LANGUAGE = 'English';
 
     // --- INITIALIZE ---
     const supabase = self.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
