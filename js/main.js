@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeModal = () => {
         feedbackModalOverlay.classList.remove('active');
+        // Reset form status for next time it opens
         setTimeout(() => {
             formStatus.textContent = '';
             formStatus.style.color = '';
@@ -175,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.addEventListener('scroll', handleScroll);
     
-    // Listeners for Modal
     openFeedbackBtn.addEventListener('click', openModal);
     closeFeedbackBtn.addEventListener('click', closeModal);
     feedbackModalOverlay.addEventListener('click', (event) => {
