@@ -3,22 +3,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_URL = 'https://cxofdwevigzyyqilfnak.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4b2Zkd2V2aWd6eXlxaWxmbmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjExMjEsImV4cCI6MjA2NTYzNzEyMX0.lCU-Gh6V6gSH6maMUa9aUoO_WEsBtVJ89BugrieB36k';
     const ITEMS_PER_PAGE = 12;
-    // Set the language for the data you want to display.
-    // Change to 'English' when you have English data in Supabase.
     const TARGET_LANGUAGE = 'English';
 
     // --- INITIALIZE ---
     const supabase = self.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Elements for AI Tool Display
     const toolsGrid = document.getElementById('toolsGrid');
     const searchInput = document.getElementById('searchInput');
     const loadingIndicator = document.getElementById('loadingIndicator');
     
+    // NEW: Elements for Feedback Form
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+    const formStatus = document.getElementById('formStatus');
+
     let currentPage = 0;
     let isLoading = false;
     let allDataLoaded = false;
     let currentSearchTerm = '';
     
-    // --- UI & DATA FUNCTIONS ---
+    // --- AI TOOL DISPLAY LOGIC (No changes here) ---
     const createTagsHTML = (tagsString) => {
         if (!tagsString) return '';
         return tagsString.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('');
@@ -40,53 +45,40 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadItems = async () => {
+        // ... (The entire loadItems function remains unchanged)
         if (isLoading || allDataLoaded) return;
-        
         isLoading = true;
         loadingIndicator.style.display = 'block';
-
         const startIndex = currentPage * ITEMS_PER_PAGE;
-        let query = supabase
-            .from('tools')
-            .select('*')
-            .eq('language', TARGET_LANGUAGE) // Fetch data for the target language
-            .order('ranking', { ascending: true })
-            .range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
-        
+        let query = supabase.from('tools').select('*').eq('language', TARGET_LANGUAGE).order('ranking', { ascending: true }).range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
         if (currentSearchTerm) {
             const searchPattern = `%${currentSearchTerm}%`;
             query = query.or(`tool_name.ilike.${searchPattern},description.ilike.${searchPattern},tags.ilike.${searchPattern}`);
         }
-
         const { data, error } = await query;
-
         if (error) {
             console.error('Error fetching data:', error);
             loadingIndicator.innerText = 'Error loading data.';
             return;
         }
-
         if (data && data.length > 0) {
             data.forEach(tool => {
                 toolsGrid.appendChild(createToolCard(tool));
             });
             currentPage++;
         }
-
         if (!data || data.length < ITEMS_PER_PAGE) {
             allDataLoaded = true;
             loadingIndicator.innerText = 'All tools have been loaded.';
         } else {
             loadingIndicator.style.display = 'none';
         }
-
         isLoading = false;
     };
 
     const handleSearch = () => {
+        // ... (The entire handleSearch function remains unchanged)
         const searchTerm = searchInput.value.trim().toLowerCase();
-        
-        // No need to check if search term is the same, just re-run.
         currentSearchTerm = searchTerm;
         toolsGrid.innerHTML = '';
         currentPage = 0;
@@ -95,21 +87,64 @@ document.addEventListener('DOMContentLoaded', () => {
         loadItems();
     };
 
+    // --- NEW: FEEDBACK FORM LOGIC ---
+    const handleFeedbackSubmit = async (event) => {
+        event.preventDefault(); // Prevent default page reload
+        
+        const name = document.getElementById('feedbackName').value.trim();
+        const email = document.getElementById('feedbackEmail').value.trim();
+        const message = document.getElementById('feedbackMessage').value.trim();
+
+        if (!message) {
+            formStatus.textContent = 'Message field cannot be empty.';
+            formStatus.style.color = 'red';
+            return;
+        }
+
+        // Disable button to prevent multiple submissions
+        feedbackSubmitBtn.disabled = true;
+        feedbackSubmitBtn.textContent = 'Submitting...';
+        formStatus.textContent = '';
+
+        const { data, error } = await supabase
+            .from('feedback')
+            .insert([
+                { name: name, email: email, message: message },
+            ]);
+
+        if (error) {
+            console.error('Error submitting feedback:', error);
+            formStatus.textContent = 'Sorry, there was an error submitting your feedback. Please try again.';
+            formStatus.style.color = 'red';
+            feedbackSubmitBtn.disabled = false;
+            feedbackSubmitBtn.textContent = 'Submit Feedback';
+        } else {
+            formStatus.textContent = 'Thank you! Your feedback has been submitted successfully.';
+            formStatus.style.color = 'green';
+            // Clear form after successful submission
+            feedbackForm.reset(); 
+            // Re-enable button after a short delay
+            setTimeout(() => {
+                feedbackSubmitBtn.disabled = false;
+                feedbackSubmitBtn.textContent = 'Submit Feedback';
+                formStatus.textContent = '';
+            }, 3000);
+        }
+    };
+
     // --- EVENT LISTENERS ---
     const handleScroll = () => {
-        // Load more when user is 200px from the bottom
         if (window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200) {
             loadItems();
         }
     };
 
-    // Use 'debounce' to prevent search from firing on every single keystroke
     let debounceTimer;
     searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             handleSearch();
-        }, 500); // Wait for 500ms of no typing before searching
+        }, 500);
     });
 
     document.querySelector('.search-bar').addEventListener('submit', (e) => {
@@ -119,6 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     window.addEventListener('scroll', handleScroll);
+
+    // NEW: Add event listener for the feedback form
+    feedbackForm.addEventListener('submit', handleFeedbackSubmit);
 
     // --- INITIAL LOAD ---
     loadItems();
