@@ -1,23 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G75DZCHFWP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-G75DZCHFWP');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tool Toolshed - The Best AI Tools Hub</title>
+    <meta name="description" content="Your ultimate hub for discovering, exploring, and leveraging the best AI tools. Find top-rated AI for content creation, image generation, programming, and more.">
+    
+    <link rel="canonical" href="https://www.mytooltoolshed.online/">
+
+    <meta property="og:title" content="My Tool Toolshed - The Best AI Tools Hub">
+    <meta property="og:url" content="https://www.mytooltoolshed.online/">
+    <meta property="og:image" content="https://www.mytooltoolshed.online/images/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="My Tool Toolshed - The Best AI Tools Hub">
+    <meta name="twitter:image" content="https://www.mytooltoolshed.online/images/og-image.jpg">
+
     <link rel="stylesheet" href="./css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    </head>
+</head>
 <body>
-    <header class="header"></header>
+    <header class="header">
+        <div class="container">
+            <h1 class="header__title">My Tool Toolshed</h1>
+            <p class="header__subtitle">Discover, explore, and leverage the most cutting-edge artificial intelligence tools.</p>
+        </div>
+    </header>
 
     <main class="main-content">
         <div class="container">
-            <section class="search-section"></section>
-            <section class="tools-section"></section>
+            <section class="search-section">
+                <h2 class="section-title">Search Tools</h2>
+                <form class="search-bar" role="search">
+                    <input type="search" id="searchInput" class="search-bar__input" placeholder="Search thousands of tools by name, description, or tag...">
+                    <button type="submit" class="search-bar__button">Search</button>
+                </form>
+            </section>
+            
+            <section class="tools-section">
+                <h2 class="section-title">Featured AI Tools</h2>
+                <div id="toolsGrid" class="tools-grid"></div>
+                <div id="loadingIndicator" class="loading-indicator" style="display: none;">Loading...</div>
+            </section>
         </div>
     </main>
-
-    <footer class="footer"></footer>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 My Tool Toolshed. All rights reserved.</p>
+        </div>
+    </footer>
 
     <button id="openFeedbackBtn" class="floating-btn">Feedback</button>
 
