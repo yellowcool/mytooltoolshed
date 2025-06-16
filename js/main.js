@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. AI工具数据 (请确保此处是您完整的JSON数据)
+    // 1. AI Tools Data (Ensure your full JSON data is here)
     const aiToolsData = [
-    {
+         {
         "排行": "1",
         "工具名称": "ChatGPT",
         "工具链接": "https://www.toolify.ai/zh/tool/chatgpt-4",
@@ -2248,23 +2248,23 @@ document.addEventListener('DOMContentLoaded', () => {
         "工具链接": "https://www.toolify.ai/zh/tool/deep-nudes",
         "描述": "AI 平台通过先进的 AI 技术从穿着照片中生成逼真的裸体图像。",
         "标签": "AI 裸体生成器, 深度裸体, 脱衣 AI, 裸体化 AI, AI 图像生成, 成人向 AI, AI 照片编辑器, 深度伪造裸体, AI 去衣"
-    },
+    }
     ];
 
-    // 2. 获取HTML元素
+    // 2. Get HTML Elements
     const searchInput = document.getElementById('searchInput');
     const toolsGrid = document.getElementById('toolsGrid');
     const loadingIndicator = document.getElementById('loadingIndicator');
     const searchForm = document.querySelector('.search-bar');
 
-    // 3. 状态变量
+    // 3. State Variables
     let currentPage = 1;
-    const itemsPerPage = 12; // 每次加载12个
-    let isLoading = false; // 防止重复加载的标志
-    let currentData = [...aiToolsData]; // 当前显示的数据源 (用于搜索)
+    const itemsPerPage = 12;
+    let isLoading = false;
+    let currentData = [...aiToolsData];
 
     /**
-     * 根据标签字符串生成HTML
+     * Create HTML for tags from a string
      */
     const createTagsHTML = (tagsString) => {
         if (!tagsString) return '';
@@ -2274,7 +2274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     /**
-     * 创建单个工具卡片的HTML
+     * Create HTML for a single tool card
      */
     const createToolCard = (tool) => {
         return `
@@ -2291,19 +2291,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * 加载更多项目
+     * Load more items onto the grid
      */
     const loadMoreItems = () => {
-        // 如果正在加载或所有数据都已加载完毕，则直接返回
         if (isLoading || (currentPage - 1) * itemsPerPage >= currentData.length) {
-            loadingIndicator.style.display = 'none'; // 确保最后隐藏加载提示
+            if ((currentPage - 1) * itemsPerPage >= currentData.length && currentData.length > 0) {
+                 // English translation for the final message
+                loadingIndicator.innerText = "All tools have been loaded.";
+                loadingIndicator.style.display = 'block';
+            } else {
+                loadingIndicator.style.display = 'none';
+            }
             return;
         }
 
         isLoading = true;
+        loadingIndicator.innerText = 'Loading...'; // Make sure the loading text is in English
         loadingIndicator.style.display = 'block';
 
-        // 模拟网络延迟，让加载效果更明显 (实际项目中可以移除)
         setTimeout(() => {
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
@@ -2317,34 +2322,31 @@ document.addEventListener('DOMContentLoaded', () => {
             isLoading = false;
             loadingIndicator.style.display = 'none';
 
-            // 如果所有数据都已加载，显示一个提示
             if ((currentPage - 1) * itemsPerPage >= currentData.length) {
-                loadingIndicator.innerText = "已加载全部工具";
+                 // English translation for the final message
+                loadingIndicator.innerText = "All tools have been loaded.";
                 loadingIndicator.style.display = 'block';
             }
 
-        }, 500); // 500毫秒延迟
+        }, 500);
     };
 
     /**
-     * 执行搜索并更新视图
+     * Perform search and update the view
      */
     const performSearch = () => {
         const searchTerm = searchInput.value.toLowerCase().trim();
         
-        // 停止监听滚动事件，以免在搜索时触发加载
         window.removeEventListener('scroll', handleScroll);
         loadingIndicator.style.display = 'none';
-        toolsGrid.innerHTML = ''; // 清空网格
+        toolsGrid.innerHTML = '';
 
         if (searchTerm === '') {
-            // 如果搜索框为空，重置为初始分页状态
             currentData = [...aiToolsData];
             currentPage = 1;
-            loadMoreItems(); // 加载第一页
-            window.addEventListener('scroll', handleScroll); // 重新添加滚动监听
+            loadMoreItems();
+            window.addEventListener('scroll', handleScroll);
         } else {
-            // 如果有搜索词，则显示所有过滤结果
             const filteredTools = aiToolsData.filter(tool => {
                 const toolText = `
                     ${tool['工具名称']?.toLowerCase()} 
@@ -2359,28 +2361,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     toolsGrid.innerHTML += createToolCard(tool);
                 });
             } else {
-                toolsGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">未找到匹配的工具。</p>`;
+                 // English translation for no results
+                toolsGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">No matching tools found.</p>`;
             }
         }
     };
     
     /**
-     * 处理滚动事件的函数
+     * Handle the scroll event
      */
     const handleScroll = () => {
-        // 当滚动条接近底部时加载更多内容
-        // (window.innerHeight + window.scrollY) 是屏幕可视区域底部的位置
-        // document.documentElement.offsetHeight 是整个文档的总高度
         if (window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200) {
             loadMoreItems();
         }
     };
 
-    // 4. 事件监听
+    // 4. Event Listeners
     searchInput.addEventListener('input', performSearch);
     searchForm.addEventListener('submit', (event) => event.preventDefault());
     window.addEventListener('scroll', handleScroll);
 
-    // 5. 初始加载第一页内容
+    // 5. Initial load
     loadMoreItems();
 });
