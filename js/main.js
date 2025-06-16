@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. AI Tools Data (Ensure your full JSON data is here)
+    // 1. AI Tools Data (Full JSON data should be here)
     const aiToolsData = [
          {
         "排行": "1",
@@ -2249,7 +2249,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "描述": "AI 平台通过先进的 AI 技术从穿着照片中生成逼真的裸体图像。",
         "标签": "AI 裸体生成器, 深度裸体, 脱衣 AI, 裸体化 AI, AI 图像生成, 成人向 AI, AI 照片编辑器, 深度伪造裸体, AI 去衣"
     }
-    ];
+];
 
     // 2. Get HTML Elements
     const searchInput = document.getElementById('searchInput');
@@ -2258,7 +2258,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchForm = document.querySelector('.search-bar');
 
     // 3. State Variables
-    let currentPage = 1;
+    // CRITICAL CHANGE: Start on page 2 because page 1 is pre-rendered in HTML
+    let currentPage = 2; 
     const itemsPerPage = 12;
     let isLoading = false;
     let currentData = [...aiToolsData];
@@ -2294,19 +2295,17 @@ document.addEventListener('DOMContentLoaded', () => {
      * Load more items onto the grid
      */
     const loadMoreItems = () => {
-        if (isLoading || (currentPage - 1) * itemsPerPage >= currentData.length) {
-            if ((currentPage - 1) * itemsPerPage >= currentData.length && currentData.length > 0) {
-                 // English translation for the final message
-                loadingIndicator.innerText = "All tools have been loaded.";
-                loadingIndicator.style.display = 'block';
-            } else {
-                loadingIndicator.style.display = 'none';
-            }
+        const totalItemsInDataSource = currentData.length;
+        const itemsCurrentlyDisplayed = toolsGrid.children.length;
+
+        if (isLoading || itemsCurrentlyDisplayed >= totalItemsInDataSource) {
+            loadingIndicator.innerText = "All tools have been loaded.";
+            loadingIndicator.style.display = 'block';
             return;
         }
 
         isLoading = true;
-        loadingIndicator.innerText = 'Loading...'; // Make sure the loading text is in English
+        loadingIndicator.innerText = 'Loading...';
         loadingIndicator.style.display = 'block';
 
         setTimeout(() => {
@@ -2322,10 +2321,10 @@ document.addEventListener('DOMContentLoaded', () => {
             isLoading = false;
             loadingIndicator.style.display = 'none';
 
-            if ((currentPage - 1) * itemsPerPage >= currentData.length) {
-                 // English translation for the final message
-                loadingIndicator.innerText = "All tools have been loaded.";
-                loadingIndicator.style.display = 'block';
+            // Check again after loading if we've reached the end
+            if (toolsGrid.children.length >= totalItemsInDataSource) {
+                 loadingIndicator.innerText = "All tools have been loaded.";
+                 loadingIndicator.style.display = 'block';
             }
 
         }, 500);
@@ -2342,11 +2341,17 @@ document.addEventListener('DOMContentLoaded', () => {
         toolsGrid.innerHTML = '';
 
         if (searchTerm === '') {
+            // Restore the full list and re-attach scroll listener
             currentData = [...aiToolsData];
-            currentPage = 1;
-            loadMoreItems();
+            // Display page 1 from the data array (as it's the same as the prerendered content)
+            const firstPageItems = currentData.slice(0, itemsPerPage);
+            firstPageItems.forEach(tool => {
+                toolsGrid.innerHTML += createToolCard(tool);
+            });
+            currentPage = 2; // Reset to load page 2 next
             window.addEventListener('scroll', handleScroll);
         } else {
+            // If searching, filter all data and display
             const filteredTools = aiToolsData.filter(tool => {
                 const toolText = `
                     ${tool['工具名称']?.toLowerCase()} 
@@ -2361,7 +2366,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     toolsGrid.innerHTML += createToolCard(tool);
                 });
             } else {
-                 // English translation for no results
                 toolsGrid.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">No matching tools found.</p>`;
             }
         }
@@ -2381,6 +2385,6 @@ document.addEventListener('DOMContentLoaded', () => {
     searchForm.addEventListener('submit', (event) => event.preventDefault());
     window.addEventListener('scroll', handleScroll);
 
-    // 5. Initial load
-    loadMoreItems();
+    // 5. Initial load is no longer needed here as content is pre-rendered.
+    // The scroll listener will handle loading more.
 });
