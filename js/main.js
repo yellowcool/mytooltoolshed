@@ -2,13 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- CONFIGURATION ---
     const SUPABASE_URL = 'https://cxofdwevigzyyqilfnak.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4b2Zkd2V2aWd6eXlxaWxmbmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjExMjEsImV4cCI6MjA2NTYzNzEyMX0.lCU-Gh6V6gSH6maMUa9aUoO_WEsBtVJ89BugrieB36k';
+    
+    // !!! IMPORTANT: Replace this with your actual Cloudflare Worker URL !!!
+    const WORKER_URL = 'https://semantic-search-handler.your-account-name.workers.dev'; 
+    
     const ITEMS_PER_PAGE = 12;
     const TARGET_LANGUAGE = 'English';
 
     // --- INITIALIZE ---
     const supabase = self.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Get all DOM elements
     const toolsGrid = document.getElementById('toolsGrid');
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.querySelector('.search-bar');
@@ -37,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         card.href = tool.tool_link;
         card.target = '_blank';
         card.className = 'tool-card';
+        // Add data attributes for GA tracking
         card.dataset.toolName = tool.tool_name;
         card.dataset.toolRank = tool.ranking;
         card.innerHTML = `
@@ -48,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         return card;
     };
-
+    
     const renderTools = (tools) => {
         if (tools && tools.length > 0) {
             tools.forEach(tool => {
@@ -57,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // This function loads tools for Browse and infinite scroll
+    // This function loads tools for standard Browse and infinite scroll
     const loadBrowseItems = async () => {
         if (isLoading || allDataLoaded) return;
         
@@ -74,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
         
         if (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching browse data:', error);
             loadingIndicator.innerText = 'Error loading data.';
             isLoading = false;
             return;
@@ -89,11 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             loadingIndicator.style.display = 'none';
         }
-
         isLoading = false;
     };
 
-    // This function handles the new semantic search
+    // This function handles the new SEMANTIC search by calling the Cloudflare Worker
     const handleSearch = async () => {
         const searchTerm = searchInput.value.trim();
         currentSearchTerm = searchTerm;
@@ -110,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- SEMANTIC SEARCH LOGIC ---
         isLoading = true;
         loadingIndicator.innerText = 'Searching for semantically similar tools...';
         loadingIndicator.style.display = 'block';
@@ -118,11 +120,18 @@ document.addEventListener('DOMContentLoaded', () => {
         gtag('event', 'search', { search_term: searchTerm });
 
         try {
-            const { data, error } = await supabase.functions.invoke('semantic-search', {
-                body: { query: searchTerm },
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: searchTerm }),
             });
 
-            if (error) throw error;
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Request to worker failed');
+            }
+
+            const data = await response.json();
             
             renderTools(data);
             loadingIndicator.innerText = data && data.length > 0 ? `Found ${data.length} matching tools.` : 'No matching tools found.';
@@ -131,15 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error with semantic search:', error);
             loadingIndicator.innerText = 'Error during search. Please try again.';
         }
-
         isLoading = false;
     };
 
     // --- MODAL CONTROL & FEEDBACK SUBMISSION LOGIC ---
-    const openModal = () => {
-        feedbackModalOverlay.classList.add('active');
-    };
-
+    const openModal = () => { feedbackModalOverlay.classList.add('active'); };
     const closeModal = () => {
         feedbackModalOverlay.classList.remove('active');
         setTimeout(() => {
@@ -150,28 +155,20 @@ document.addEventListener('DOMContentLoaded', () => {
             feedbackSubmitBtn.textContent = 'Submit Feedback';
         }, 300);
     };
-
     const handleFeedbackSubmit = async (event) => {
         event.preventDefault();
-        
         const name = document.getElementById('feedbackName').value.trim();
         const email = document.getElementById('feedbackEmail').value.trim();
         const message = document.getElementById('feedbackMessage').value.trim();
-
         if (!message) {
             formStatus.textContent = 'Message field cannot be empty.';
             formStatus.style.color = 'red';
             return;
         }
-
         feedbackSubmitBtn.disabled = true;
         feedbackSubmitBtn.textContent = 'Submitting...';
         formStatus.textContent = '';
-
-        const { data, error } = await supabase
-            .from('feedback')
-            .insert([{ name, email, message }]);
-
+        const { data, error } = await supabase.from('feedback').insert([{ name, email, message }]);
         if (error) {
             console.error('Error submitting feedback:', error);
             formStatus.textContent = 'Sorry, there was an error. Please try again.';
@@ -202,9 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     openFeedbackBtn.addEventListener('click', openModal);
     closeFeedbackBtn.addEventListener('click', closeModal);
     feedbackModalOverlay.addEventListener('click', (event) => {
-        if (event.target === feedbackModalOverlay) {
-            closeModal();
-        }
+        if (event.target === feedbackModalOverlay) { closeModal(); }
     });
     feedbackForm.addEventListener('submit', handleFeedbackSubmit);
 
