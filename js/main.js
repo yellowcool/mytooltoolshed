@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4b2Zkd2V2aWd6eXlxaWxmbmFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNjExMjEsImV4cCI6MjA2NTYzNzEyMX0.lCU-Gh6V6gSH6maMUa9aUoO_WEsBtVJ89BugrieB36k';
     
     // !!! IMPORTANT: Replace this with your actual Cloudflare Worker URL !!!
-    const WORKER_URL = 'https://semantic-search-handler.your-account-name.workers.dev'; 
+    const WORKER_URL = 'https://semantic-search-handler.coolyellow110.workers.dev'; 
     
     const ITEMS_PER_PAGE = 12;
     const TARGET_LANGUAGE = 'English';
