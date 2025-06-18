@@ -8,15 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INITIALIZE ---
     const supabase = self.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Get all DOM elements
+    // Elements for AI Tool Display
     const toolsGrid = document.getElementById('toolsGrid');
     const searchInput = document.getElementById('searchInput');
+    const searchForm = document.querySelector('.search-bar'); // Get the form element
     const loadingIndicator = document.getElementById('loadingIndicator');
+    
+    // Elements for Modal Feedback Form
     const openFeedbackBtn = document.getElementById('openFeedbackBtn');
     const feedbackModalOverlay = document.getElementById('feedbackModalOverlay');
     const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
     const feedbackForm = document.getElementById('feedbackForm');
-    
+    const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+    const formStatus = document.getElementById('formStatus');
+
     let currentPage = 0;
     let isLoading = false;
     let allDataLoaded = false;
@@ -33,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         card.href = tool.tool_link;
         card.target = '_blank';
         card.className = 'tool-card';
-        // NEW: Add data attributes for tracking
         card.dataset.toolName = tool.tool_name;
         card.dataset.toolRank = tool.ranking;
         card.innerHTML = `
@@ -46,48 +50,96 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     };
 
-    const loadItems = async () => { /* ... this function remains unchanged ... */ };
-    const handleScroll = () => { /* ... this function remains unchanged ... */ };
-    const openModal = () => { /* ... this function remains unchanged ... */ };
-    const closeModal = () => { /* ... this function remains unchanged ... */ };
-    const handleFeedbackSubmit = async (event) => { /* ... this function remains unchanged ... */ };
-    
+    const loadItems = async (isSearch = false) => {
+        if (isLoading || (allDataLoaded && !isSearch)) return;
+        
+        isLoading = true;
+        loadingIndicator.style.display = 'block';
+
+        if (isSearch) {
+            toolsGrid.innerHTML = '';
+        }
+
+        const startIndex = currentPage * ITEMS_PER_PAGE;
+        let query = supabase
+            .from('tools')
+            .select('*')
+            .eq('language', TARGET_LANGUAGE)
+            .order('ranking', { ascending: true })
+            .range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
+        
+        if (currentSearchTerm) {
+            const searchPattern = `%${currentSearchTerm}%`;
+            query = query.or(`tool_name.ilike.${searchPattern},description.ilike.${searchPattern},tags.ilike.${searchPattern}`);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('Error fetching data:', error);
+            loadingIndicator.innerText = 'Error loading data.';
+            return;
+        }
+
+        if (data && data.length > 0) {
+            data.forEach(tool => {
+                toolsGrid.appendChild(createToolCard(tool));
+            });
+            currentPage++;
+        }
+
+        if (!data || data.length < ITEMS_PER_PAGE) {
+            allDataLoaded = true;
+            loadingIndicator.innerText = 'All tools have been loaded.';
+        } else {
+            loadingIndicator.style.display = 'none';
+        }
+
+        isLoading = false;
+    };
+
+    // This function now gets called ONLY when the form is submitted
     const handleSearch = () => {
         const searchTerm = searchInput.value.trim().toLowerCase();
         
-        // --- NEW: Track Search Event ---
-        // Only track if the search term is not empty
         if (searchTerm) {
-            gtag('event', 'search', {
-                search_term: searchTerm
-            });
+            gtag('event', 'search', { search_term: searchTerm });
         }
-
+        
         currentSearchTerm = searchTerm;
-        toolsGrid.innerHTML = '';
         currentPage = 0;
         allDataLoaded = false;
         loadingIndicator.innerText = 'Loading...';
-        loadItems();
+        loadItems(true); 
     };
 
+    // --- MODAL CONTROL & FEEDBACK SUBMISSION LOGIC (Unchanged) ---
+    const openModal = () => { /* ... */ };
+    const closeModal = () => { /* ... */ };
+    const handleFeedbackSubmit = async (event) => { /* ... */ };
+    // --- (The code for these functions is still here, just omitted for brevity) ---
+
+
     // --- EVENT LISTENERS ---
-    
-    // Search input listener (unchanged)
-    let debounceTimer;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => { handleSearch(); }, 500);
-    });
-    document.querySelector('.search-bar').addEventListener('submit', (e) => {
-        e.preventDefault();
-        clearTimeout(debounceTimer);
+    const handleScroll = () => {
+        // Infinite scroll should NOT run if a search term is active
+        if (!currentSearchTerm && window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200) {
+            loadItems();
+        }
+    };
+
+    // REMOVED: The 'input' event listener with the debounce timer is now gone.
+
+    // MODIFIED: Search is now only triggered by the form's 'submit' event.
+    // This handles both clicking the button and pressing Enter in the input field.
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Prevent the browser from reloading the page
         handleSearch();
     });
     
     window.addEventListener('scroll', handleScroll);
     
-    // Modal listeners (unchanged)
+    // Listeners for Modal (Unchanged)
     openFeedbackBtn.addEventListener('click', openModal);
     closeFeedbackBtn.addEventListener('click', closeModal);
     feedbackModalOverlay.addEventListener('click', (event) => {
@@ -95,27 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     feedbackForm.addEventListener('submit', handleFeedbackSubmit);
 
-    // --- NEW: Add Event Listener for Tool Clicks ---
-    // Using event delegation on the parent grid for efficiency
-    toolsGrid.addEventListener('click', (event) => {
-        const card = event.target.closest('.tool-card');
-        if (card) {
-            const toolName = card.dataset.toolName;
-            const toolRank = card.dataset.toolRank;
-            
-            gtag('event', 'select_content', {
-                content_type: 'AI Tool',
-                item_id: `rank_${toolRank}`, // e.g., rank_1, rank_2
-                content_name: toolName
-            });
-        }
-    });
+    // Listener for Tool Clicks (Unchanged)
+    toolsGrid.addEventListener('click', (event) => { /* ... */ });
 
     // --- INITIAL LOAD ---
     loadItems();
 
 
-    // --- OMITTED FUNCTIONS FOR BREVITY (They are the same as before) ---
-    // NOTE: The full code is below. This is just to highlight the changes.
-    async function a(){if(isLoading||allDataLoaded)return;isLoading=!0;loadingIndicator.style.display="block";const e=currentPage*ITEMS_PER_PAGE;let t=supabase.from("tools").select("*").eq("language",TARGET_LANGUAGE).order("ranking",{ascending:!0}).range(e,e+ITEMS_PER_PAGE-1);currentSearchTerm&&(t=t.or(`tool_name.ilike.%${currentSearchTerm}%,description.ilike.%${currentSearchTerm}%,tags.ilike.%${currentSearchTerm}%`));const{data:o,error:n}=await t;if(n)return console.error("Error fetching data:",n),void(loadingIndicator.innerText="Error loading data.");o&&o.length>0&&(o.forEach(e=>{toolsGrid.appendChild(createToolCard(e))}),currentPage++),o&&o.length<ITEMS_PER_PAGE?(allDataLoaded=!0,loadingIndicator.innerText="All tools have been loaded."):loadingIndicator.style.display="none",isLoading=!1}loadItems=a;function b(){if(window.innerHeight+window.scrollY>=document.documentElement.offsetHeight-200)loadItems()}handleScroll=b;function c(){feedbackModalOverlay.classList.add("active")}openModal=c;function d(){feedbackModalOverlay.classList.remove("active");setTimeout(()=>{formStatus.textContent="",formStatus.style.color="",feedbackForm.reset(),feedbackSubmitBtn.disabled=!1,feedbackSubmitBtn.textContent="Submit Feedback"},300)}closeModal=d;async function e(e){e.preventDefault();const t=document.getElementById("feedbackName").value.trim(),o=document.getElementById("feedbackEmail").value.trim(),n=document.getElementById("feedbackMessage").value.trim();if(!n)return formStatus.textContent="Message field cannot be empty.",void(formStatus.style.color="red");feedbackSubmitBtn.disabled=!0,feedbackSubmitBtn.textContent="Submitting...",formStatus.textContent="";const{data:a,error:i}=await supabase.from("feedback").insert([{name:t,email:o,message:n}]);i?(console.error("Error submitting feedback:",i),formStatus.textContent="Sorry, there was an error. Please try again.",formStatus.style.color="red",feedbackSubmitBtn.disabled=!1,feedbackSubmitBtn.textContent="Submit Feedback"):(formStatus.textContent="Thank you! Your feedback has been submitted successfully.",formStatus.style.color="green",setTimeout(closeModal,2e3))}handleFeedbackSubmit=e;
+    // --- Helper functions for brevity ---
+    (function(){const t=document.getElementById("feedbackModalOverlay"),e=document.getElementById("closeFeedbackBtn"),o=document.getElementById("feedbackForm"),n=document.getElementById("feedbackSubmitBtn"),a=document.getElementById("formStatus");const c=()=>{t.classList.add("active")},d=()=>{t.classList.remove("active"),setTimeout(()=>{a.textContent="",a.style.color="",o.reset(),n.disabled=!1,n.textContent="Submit Feedback"},300)};openModal=c,closeModal=d;async function i(t){t.preventDefault();const c=document.getElementById("feedbackName").value.trim(),d=document.getElementById("feedbackEmail").value.trim(),l=document.getElementById("feedbackMessage").value.trim();if(!l)return a.textContent="Message field cannot be empty.",void(a.style.color="red");n.disabled=!0,n.textContent="Submitting...",a.textContent="";const{data:s,error:r}=await supabase.from("feedback").insert([{name:c,email:d,message:l}]);r?(console.error("Error submitting feedback:",r),a.textContent="Sorry, there was an error. Please try again.",a.style.color="red",n.disabled=!1,n.textContent="Submit Feedback"):(a.textContent="Thank you! Your feedback has been submitted successfully.",a.style.color="green",setTimeout(closeModal,2e3))}handleFeedbackSubmit=i})();
+    toolsGrid.addEventListener('click', (event) => { const card = event.target.closest('.tool-card'); if (card) { const toolName = card.dataset.toolName; const toolRank = card.dataset.toolRank; gtag('event', 'select_content', { content_type: 'AI Tool', item_id: `rank_${toolRank}`, content_name: toolName }); } });
 });
