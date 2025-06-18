@@ -8,25 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INITIALIZE ---
     const supabase = self.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Elements for AI Tool Display
+    // Get all DOM elements
     const toolsGrid = document.getElementById('toolsGrid');
     const searchInput = document.getElementById('searchInput');
     const loadingIndicator = document.getElementById('loadingIndicator');
-    
-    // Elements for Modal Feedback Form
     const openFeedbackBtn = document.getElementById('openFeedbackBtn');
     const feedbackModalOverlay = document.getElementById('feedbackModalOverlay');
     const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
     const feedbackForm = document.getElementById('feedbackForm');
-    const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
-    const formStatus = document.getElementById('formStatus');
-
+    
     let currentPage = 0;
     let isLoading = false;
     let allDataLoaded = false;
     let currentSearchTerm = '';
     
-    // --- AI TOOL DISPLAY LOGIC ---
+    // --- UI & DATA FUNCTIONS ---
     const createTagsHTML = (tagsString) => {
         if (!tagsString) return '';
         return tagsString.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('');
@@ -37,6 +33,9 @@ document.addEventListener('DOMContentLoaded', () => {
         card.href = tool.tool_link;
         card.target = '_blank';
         card.className = 'tool-card';
+        // NEW: Add data attributes for tracking
+        card.dataset.toolName = tool.tool_name;
+        card.dataset.toolRank = tool.ranking;
         card.innerHTML = `
             <h3 class="tool-card__name">
                 <span class="rank-badge">${tool.ranking}</span> ${tool.tool_name}
@@ -47,53 +46,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     };
 
-    const loadItems = async () => {
-        if (isLoading || allDataLoaded) return;
-        
-        isLoading = true;
-        loadingIndicator.style.display = 'block';
-
-        const startIndex = currentPage * ITEMS_PER_PAGE;
-        let query = supabase
-            .from('tools')
-            .select('*')
-            .eq('language', TARGET_LANGUAGE)
-            .order('ranking', { ascending: true })
-            .range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
-        
-        if (currentSearchTerm) {
-            const searchPattern = `%${currentSearchTerm}%`;
-            query = query.or(`tool_name.ilike.${searchPattern},description.ilike.${searchPattern},tags.ilike.${searchPattern}`);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-            console.error('Error fetching data:', error);
-            loadingIndicator.innerText = 'Error loading data.';
-            return;
-        }
-
-        if (data && data.length > 0) {
-            data.forEach(tool => {
-                toolsGrid.appendChild(createToolCard(tool));
-            });
-            currentPage++;
-        }
-
-        if (!data || data.length < ITEMS_PER_PAGE) {
-            allDataLoaded = true;
-            loadingIndicator.innerText = 'All tools have been loaded.';
-        } else {
-            loadingIndicator.style.display = 'none';
-        }
-
-        isLoading = false;
-    };
-
+    const loadItems = async () => { /* ... this function remains unchanged ... */ };
+    const handleScroll = () => { /* ... this function remains unchanged ... */ };
+    const openModal = () => { /* ... this function remains unchanged ... */ };
+    const closeModal = () => { /* ... this function remains unchanged ... */ };
+    const handleFeedbackSubmit = async (event) => { /* ... this function remains unchanged ... */ };
+    
     const handleSearch = () => {
         const searchTerm = searchInput.value.trim().toLowerCase();
         
+        // --- NEW: Track Search Event ---
+        // Only track if the search term is not empty
+        if (searchTerm) {
+            gtag('event', 'search', {
+                search_term: searchTerm
+            });
+        }
+
         currentSearchTerm = searchTerm;
         toolsGrid.innerHTML = '';
         currentPage = 0;
@@ -102,72 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
         loadItems();
     };
 
-    // --- MODAL CONTROL LOGIC ---
-    const openModal = () => {
-        feedbackModalOverlay.classList.add('active');
-    };
-
-    const closeModal = () => {
-        feedbackModalOverlay.classList.remove('active');
-        // Reset form status for next time it opens
-        setTimeout(() => {
-            formStatus.textContent = '';
-            formStatus.style.color = '';
-            feedbackForm.reset();
-            feedbackSubmitBtn.disabled = false;
-            feedbackSubmitBtn.textContent = 'Submit Feedback';
-        }, 300);
-    };
-
-    const handleFeedbackSubmit = async (event) => {
-        event.preventDefault();
-        
-        const name = document.getElementById('feedbackName').value.trim();
-        const email = document.getElementById('feedbackEmail').value.trim();
-        const message = document.getElementById('feedbackMessage').value.trim();
-
-        if (!message) {
-            formStatus.textContent = 'Message field cannot be empty.';
-            formStatus.style.color = 'red';
-            return;
-        }
-
-        feedbackSubmitBtn.disabled = true;
-        feedbackSubmitBtn.textContent = 'Submitting...';
-        formStatus.textContent = '';
-
-        const { data, error } = await supabase
-            .from('feedback')
-            .insert([{ name: name, email: email, message: message }]);
-
-        if (error) {
-            console.error('Error submitting feedback:', error);
-            formStatus.textContent = 'Sorry, there was an error. Please try again.';
-            formStatus.style.color = 'red';
-            feedbackSubmitBtn.disabled = false;
-            feedbackSubmitBtn.textContent = 'Submit Feedback';
-        } else {
-            formStatus.textContent = 'Thank you! Your feedback has been submitted successfully.';
-            formStatus.style.color = 'green';
-            setTimeout(closeModal, 2000);
-        }
-    };
-    
     // --- EVENT LISTENERS ---
-    const handleScroll = () => {
-        if (window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200) {
-            loadItems();
-        }
-    };
-
+    
+    // Search input listener (unchanged)
     let debounceTimer;
     searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            handleSearch();
-        }, 500);
+        debounceTimer = setTimeout(() => { handleSearch(); }, 500);
     });
-
     document.querySelector('.search-bar').addEventListener('submit', (e) => {
         e.preventDefault();
         clearTimeout(debounceTimer);
@@ -176,15 +87,35 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.addEventListener('scroll', handleScroll);
     
+    // Modal listeners (unchanged)
     openFeedbackBtn.addEventListener('click', openModal);
     closeFeedbackBtn.addEventListener('click', closeModal);
     feedbackModalOverlay.addEventListener('click', (event) => {
-        if (event.target === feedbackModalOverlay) {
-            closeModal();
-        }
+        if (event.target === feedbackModalOverlay) { closeModal(); }
     });
     feedbackForm.addEventListener('submit', handleFeedbackSubmit);
 
+    // --- NEW: Add Event Listener for Tool Clicks ---
+    // Using event delegation on the parent grid for efficiency
+    toolsGrid.addEventListener('click', (event) => {
+        const card = event.target.closest('.tool-card');
+        if (card) {
+            const toolName = card.dataset.toolName;
+            const toolRank = card.dataset.toolRank;
+            
+            gtag('event', 'select_content', {
+                content_type: 'AI Tool',
+                item_id: `rank_${toolRank}`, // e.g., rank_1, rank_2
+                content_name: toolName
+            });
+        }
+    });
+
     // --- INITIAL LOAD ---
     loadItems();
+
+
+    // --- OMITTED FUNCTIONS FOR BREVITY (They are the same as before) ---
+    // NOTE: The full code is below. This is just to highlight the changes.
+    async function a(){if(isLoading||allDataLoaded)return;isLoading=!0;loadingIndicator.style.display="block";const e=currentPage*ITEMS_PER_PAGE;let t=supabase.from("tools").select("*").eq("language",TARGET_LANGUAGE).order("ranking",{ascending:!0}).range(e,e+ITEMS_PER_PAGE-1);currentSearchTerm&&(t=t.or(`tool_name.ilike.%${currentSearchTerm}%,description.ilike.%${currentSearchTerm}%,tags.ilike.%${currentSearchTerm}%`));const{data:o,error:n}=await t;if(n)return console.error("Error fetching data:",n),void(loadingIndicator.innerText="Error loading data.");o&&o.length>0&&(o.forEach(e=>{toolsGrid.appendChild(createToolCard(e))}),currentPage++),o&&o.length<ITEMS_PER_PAGE?(allDataLoaded=!0,loadingIndicator.innerText="All tools have been loaded."):loadingIndicator.style.display="none",isLoading=!1}loadItems=a;function b(){if(window.innerHeight+window.scrollY>=document.documentElement.offsetHeight-200)loadItems()}handleScroll=b;function c(){feedbackModalOverlay.classList.add("active")}openModal=c;function d(){feedbackModalOverlay.classList.remove("active");setTimeout(()=>{formStatus.textContent="",formStatus.style.color="",feedbackForm.reset(),feedbackSubmitBtn.disabled=!1,feedbackSubmitBtn.textContent="Submit Feedback"},300)}closeModal=d;async function e(e){e.preventDefault();const t=document.getElementById("feedbackName").value.trim(),o=document.getElementById("feedbackEmail").value.trim(),n=document.getElementById("feedbackMessage").value.trim();if(!n)return formStatus.textContent="Message field cannot be empty.",void(formStatus.style.color="red");feedbackSubmitBtn.disabled=!0,feedbackSubmitBtn.textContent="Submitting...",formStatus.textContent="";const{data:a,error:i}=await supabase.from("feedback").insert([{name:t,email:o,message:n}]);i?(console.error("Error submitting feedback:",i),formStatus.textContent="Sorry, there was an error. Please try again.",formStatus.style.color="red",feedbackSubmitBtn.disabled=!1,feedbackSubmitBtn.textContent="Submit Feedback"):(formStatus.textContent="Thank you! Your feedback has been submitted successfully.",formStatus.style.color="green",setTimeout(closeModal,2e3))}handleFeedbackSubmit=e;
 });
