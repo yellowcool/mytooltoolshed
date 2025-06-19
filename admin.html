@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - AI Tool Uploader</title>
+    <link rel="stylesheet" href="./admin.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Tools Uploader</h1>
+            <p>Upload an Excel (.xlsx) or CSV file to add new tools to the database.</p>
+        </header>
+        <main>
+            <div class="upload-section">
+                <input type="file" id="fileUploader" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                <button id="processButton">Process File</button>
+            </div>
+            <div class="log-section">
+                <h2>Processing Log</h2>
+                <pre id="logArea">Awaiting file submission...</pre>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./admin.js"></script>
+</body>
+</html>
