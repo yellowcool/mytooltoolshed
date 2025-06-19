@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G75DZCHFWP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-G75DZCHFWP');
+    </script>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tool Toolshed - The Best AI Tools Hub</title>
+    <meta name="description" content="Your ultimate hub for discovering, exploring, and leveraging the best AI tools. Find top-rated AI for content creation, image generation, programming, and more.">
+    <link rel="canonical" href="https://www.mytooltoolshed.online/">
+    <meta property="og:title" content="My Tool Toolshed - The Best AI Tools Hub">
+    <meta property="og:url" content="https://www.mytooltoolshed.online/">
+    <meta property="og:image" content="https://www.mytooltoolshed.online/images/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="My Tool Toolshed - The Best AI Tools Hub">
+    <meta name="twitter:image" content="https://www.mytooltoolshed.online/images/og-image.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="./css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -28,75 +48,51 @@
             <section class="tools-section">
                 <h2 class="section-title">Featured AI Tools</h2>
                 <div id="toolsGrid" class="tools-grid">
-                    <a href="https://chatgpt.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="ChatGPT" data-tool-rank="1">
-                        <h3 class="tool-card__name"><span class="rank-badge">1</span> ChatGPT</h3>
-                        <p class="tool-card__description">A free-to-use AI system for conversations, insights, and task automation.</p>
-                        <div class="tool-card__tags"><span class="tag">AI chatbot</span><span class="tag">Natural language processing</span><span class="tag">Conversational AI</span><span class="tag">Task automation</span><span class="tag">Content generation</span><span class="tag">OpenAI</span></div>
-                    </a>
-                    <a href="https://gemini.google.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Gemini & Gemini Advanced" data-tool-rank="2">
-                        <h3 class="tool-card__name"><span class="rank-badge">2</span> Gemini & Gemini Advanced</h3>
-                        <p class="tool-card__description">Google's personal, proactive, and powerful AI assistant.</p>
-                        <div class="tool-card__tags"><span class="tag">AI assistant</span><span class="tag">Conversational AI</span><span class="tag">Google AI</span><span class="tag">Productivity tool</span><span class="tag">Writing assistant</span><span class="tag">Research tool</span><span class="tag">Content creation</span><span class="tag">Personal assistant</span></div>
-                    </a>
-                    <a href="https://www.perplexity.ai?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Perplexity AI" data-tool-rank="3">
-                        <h3 class="tool-card__name"><span class="rank-badge">3</span> Perplexity AI</h3>
-                        <p class="tool-card__description">An AI search engine using large language models for information discovery and answering questions.</p>
-                        <div class="tool-card__tags"><span class="tag">AI search engine</span><span class="tag">Natural language processing</span><span class="tag">Information retrieval</span><span class="tag">Question answering</span><span class="tag">Large language models</span><span class="tag">Twitter data analysis</span><span class="tag">SQL translation</span></div>
-                    </a>
-                    <a href="https://shop.app?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Shop: Your AI-Powered Shopping Assistant" data-tool-rank="4">
-                        <h3 class="tool-card__name"><span class="rank-badge">4</span> Shop: Your AI-Powered Shopping Assistant</h3>
-                        <p class="tool-card__description">An app for shopping, earning rewards, tracking packages, and secure one-tap checkouts.</p>
-                        <div class="tool-card__tags"><span class="tag">Online shopping</span><span class="tag">Mobile commerce</span><span class="tag">Rewards program</span><span class="tag">Package tracking</span><span class="tag">Secure checkout</span><span class="tag">Buy now pay later</span><span class="tag">Shop Pay</span></div>
-                    </a>
-                    <a href="https://aistudio.google.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Google AI Studio" data-tool-rank="5">
-                        <h3 class="tool-card__name"><span class="rank-badge">5</span> Google AI Studio</h3>
-                        <p class="tool-card__description">Platform for building with Google's Gemini AI models.</p>
-                        <div class="tool-card__tags"><span class="tag">AI development</span><span class="tag">Generative AI</span><span class="tag">Multimodal AI</span><span class="tag">API</span><span class="tag">Machine Learning</span><span class="tag">Google AI</span><span class="tag">Gemini</span><span class="tag">AI Studio</span><span class="tag">Text generation</span><span class="tag">Image generation</span><span class="tag">Video generation</span><span class="tag">Code generation</span></div>
-                    </a>
-                    <a href="https://go.xlviiirdr.com/ls?userId=638fcf19f7394c9b3b50294ad3c3c3044c68e9fef080ab994cbaa32a2ac0f2c2" target="_blank" class="tool-card" data-tool-name="Lovescape AI" data-tool-rank="6">
-                        <h3 class="tool-card__name"><span class="rank-badge">6</span> Lovescape AI</h3>
-                        <p class="tool-card__description">Platform for creating and interacting with AI girlfriends through chat, visuals, and voice.</p>
-                        <div class="tool-card__tags"><span class="tag">AI girlfriend</span><span class="tag">virtual companion</span><span class="tag">AI chat</span><span class="tag">AI romance</span><span class="tag">AI chatbot</span><span class="tag">AI personality</span><span class="tag">emotional support</span><span class="tag">virtual relationship</span><span class="tag">anime girlfriend AI</span></div>
-                    </a>
-                    <a href="https://spicychat.ai?ref=n2mwzdu" target="_blank" class="tool-card" data-tool-name="SpicyChat AI" data-tool-rank="7">
-                        <h3 class="tool-card__name"><span class="rank-badge">7</span> SpicyChat AI</h3>
-                        <p class="tool-card__description">Chatbot platform with AI characters, allowing users to chat and create bots.</p>
-                        <div class="tool-card__tags"><span class="tag">AI chatbot</span><span class="tag">AI character</span><span class="tag">Chatbot platform</span><span class="tag">AI conversation</span><span class="tag">Chatbot creation</span><span class="tag">Community chatbots</span></div>
-                    </a>
-                    <a href="https://adobe.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Adobe" data-tool-rank="8">
-                        <h3 class="tool-card__name"><span class="rank-badge">8</span> Adobe</h3>
-                        <p class="tool-card__description">Adobe provides creative, marketing, and document management solutions.</p>
-                        <div class="tool-card__tags"><span class="tag">Creative Suite</span><span class="tag">Graphic Design</span><span class="tag">Photo Editing</span><span class="tag">Video Editing</span><span class="tag">PDF</span><span class="tag">E-signatures</span><span class="tag">Marketing</span><span class="tag">Commerce</span><span class="tag">Generative AI</span><span class="tag">Adobe Firefly</span><span class="tag">Adobe Express</span><span class="tag">Photoshop</span><span class="tag">Adobe Acrobat</span></div>
-                    </a>
-                    <a href="https://claude.ai?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Claude 2" data-tool-rank="9">
-                        <h3 class="tool-card__name"><span class="rank-badge">9</span> Claude 2</h3>
-                        <p class="tool-card__description">Claude is an AI assistant from Anthropic that helps with tasks via natural language.</p>
-                        <div class="tool-card__tags"><span class="tag">AI assistant</span><span class="tag">Natural language processing</span><span class="tag">Task automation</span><span class="tag">API access</span><span class="tag">Web access</span></div>
-                    </a>
-                    <a href="https://www.remove.bg?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Remove.bg" data-tool-rank="10">
-                        <h3 class="tool-card__name"><span class="rank-badge">10</span> Remove.bg</h3>
-                        <p class="tool-card__description">AI-powered background remover for images in 5 seconds.</p>
-                        <div class="tool-card__tags"><span class="tag">Background removal</span><span class="tag">AI</span><span class="tag">Image editing</span><span class="tag">Automation</span><span class="tag">API</span><span class="tag">Photo editor</span><span class="tag">Transparent background</span></div>
-                    </a>
-                    <a href="https://janitorai.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="JanitorAI" data-tool-rank="11">
-                        <h3 class="tool-card__name"><span class="rank-badge">11</span> JanitorAI</h3>
-                        <p class="tool-card__description">Janitor AI allows users to create NSFW fictional chatbot characters.</p>
-                        <div class="tool-card__tags"><span class="tag">NSFW chatbot</span><span class="tag">Fictional characters</span><span class="tag">AI character creation</span><span class="tag">Role-playing</span><span class="tag">Large language models</span></div>
-                    </a>
-                    <a href="https://shutterstock.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Shutterstock" data-tool-rank="12">
-                        <h3 class="tool-card__name"><span class="rank-badge">12</span> Shutterstock</h3>
-                        <p class="tool-card__description">Shutterstock provides royalty-free stock images, videos, and music with AI-powered creative tools.</p>
-                        <div class="tool-card__tags"><span class="tag">Stock images</span><span class="tag">Stock photos</span><span class="tag">Vectors</span><span class="tag">Stock video</span><span class="tag">Stock music</span><span class="tag">Royalty-free</span><span class="tag">AI content generation</span><span class="tag">Design tools</span><span class="tag">Creative assets</span></div>
-                    </a>
-                    </div>
+                    <a href="https://chatgpt.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="ChatGPT" data-tool-rank="1"><h3 class="tool-card__name"><span class="rank-badge">1</span> ChatGPT</h3><p class="tool-card__description">A free-to-use AI system for conversations, insights, and task automation.</p><div class="tool-card__tags"><span class="tag">AI chatbot</span><span class="tag">Natural language processing</span><span class="tag">Conversational AI</span><span class="tag">Task automation</span><span class="tag">Content generation</span><span class="tag">OpenAI</span></div></a>
+                    <a href="https://gemini.google.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Gemini &amp; Gemini Advanced" data-tool-rank="2"><h3 class="tool-card__name"><span class="rank-badge">2</span> Gemini &amp; Gemini Advanced</h3><p class="tool-card__description">Google's personal, proactive, and powerful AI assistant.</p><div class="tool-card__tags"><span class="tag">AI assistant</span><span class="tag">Conversational AI</span><span class="tag">Google AI</span><span class="tag">Productivity tool</span><span class="tag">Writing assistant</span><span class="tag">Research tool</span><span class="tag">Content creation</span><span class="tag">Personal assistant</span></div></a>
+                    <a href="https://www.perplexity.ai?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Perplexity AI" data-tool-rank="3"><h3 class="tool-card__name"><span class="rank-badge">3</span> Perplexity AI</h3><p class="tool-card__description">An AI search engine using large language models for information discovery and answering questions.</p><div class="tool-card__tags"><span class="tag">AI search engine</span><span class="tag">Natural language processing</span><span class="tag">Information retrieval</span><span class="tag">Question answering</span><span class="tag">Large language models</span><span class="tag">Twitter data analysis</span><span class="tag">SQL translation</span></div></a>
+                    <a href="https://shop.app?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Shop: Your AI-Powered Shopping Assistant" data-tool-rank="4"><h3 class="tool-card__name"><span class="rank-badge">4</span> Shop: Your AI-Powered Shopping Assistant</h3><p class="tool-card__description">An app for shopping, earning rewards, tracking packages, and secure one-tap checkouts.</p><div class="tool-card__tags"><span class="tag">Online shopping</span><span class="tag">Mobile commerce</span><span class="tag">Rewards program</span><span class="tag">Package tracking</span><span class="tag">Secure checkout</span><span class="tag">Buy now pay later</span><span class="tag">Shop Pay</span></div></a>
+                    <a href="https://aistudio.google.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Google AI Studio" data-tool-rank="5"><h3 class="tool-card__name"><span class="rank-badge">5</span> Google AI Studio</h3><p class="tool-card__description">Platform for building with Google's Gemini AI models.</p><div class="tool-card__tags"><span class="tag">AI development</span><span class="tag">Generative AI</span><span class="tag">Multimodal AI</span><span class="tag">API</span><span class="tag">Machine Learning</span><span class="tag">Google AI</span><span class="tag">Gemini</span><span class="tag">AI Studio</span><span class="tag">Text generation</span><span class="tag">Image generation</span><span class="tag">Video generation</span><span class="tag">Code generation</span></div></a>
+                    <a href="https://go.xlviiirdr.com/ls?userId=638fcf19f7394c9b3b50294ad3c3c3044c68e9fef080ab994cbaa32a2ac0f2c2" target="_blank" class="tool-card" data-tool-name="Lovescape AI" data-tool-rank="6"><h3 class="tool-card__name"><span class="rank-badge">6</span> Lovescape AI</h3><p class="tool-card__description">Platform for creating and interacting with AI girlfriends through chat, visuals, and voice.</p><div class="tool-card__tags"><span class="tag">AI girlfriend</span><span class="tag">virtual companion</span><span class="tag">AI chat</span><span class="tag">AI romance</span><span class="tag">AI chatbot</span><span class="tag">AI personality</span><span class="tag">emotional support</span><span class="tag">virtual relationship</span><span class="tag">anime girlfriend AI</span></div></a>
+                    <a href="https://spicychat.ai?ref=n2mwzdu" target="_blank" class="tool-card" data-tool-name="SpicyChat AI" data-tool-rank="7"><h3 class="tool-card__name"><span class="rank-badge">7</span> SpicyChat AI</h3><p class="tool-card__description">Chatbot platform with AI characters, allowing users to chat and create bots.</p><div class="tool-card__tags"><span class="tag">AI chatbot</span><span class="tag">AI character</span><span class="tag">Chatbot platform</span><span class="tag">AI conversation</span><span class="tag">Chatbot creation</span><span class="tag">Community chatbots</span></div></a>
+                    <a href="https://adobe.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Adobe" data-tool-rank="8"><h3 class="tool-card__name"><span class="rank-badge">8</span> Adobe</h3><p class="tool-card__description">Adobe provides creative, marketing, and document management solutions.</p><div class="tool-card__tags"><span class="tag">Creative Suite</span><span class="tag">Graphic Design</span><span class="tag">Photo Editing</span><span class="tag">Video Editing</span><span class="tag">PDF</span><span class="tag">E-signatures</span><span class="tag">Marketing</span><span class="tag">Commerce</span><span class="tag">Generative AI</span><span class="tag">Adobe Firefly</span><span class="tag">Adobe Express</span><span class="tag">Photoshop</span><span class="tag">Adobe Acrobat</span></div></a>
+                    <a href="https://claude.ai?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Claude 2" data-tool-rank="9"><h3 class="tool-card__name"><span class="rank-badge">9</span> Claude 2</h3><p class="tool-card__description">Claude is an AI assistant from Anthropic that helps with tasks via natural language.</p><div class="tool-card__tags"><span class="tag">AI assistant</span><span class="tag">Natural language processing</span><span class="tag">Task automation</span><span class="tag">API access</span><span class="tag">Web access</span></div></a>
+                    <a href="https://www.remove.bg?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Remove.bg" data-tool-rank="10"><h3 class="tool-card__name"><span class="rank-badge">10</span> Remove.bg</h3><p class="tool-card__description">AI-powered background remover for images in 5 seconds.</p><div class="tool-card__tags"><span class="tag">Background removal</span><span class="tag">AI</span><span class="tag">Image editing</span><span class="tag">Automation</span><span class="tag">API</span><span class="tag">Photo editor</span><span class="tag">Transparent background</span></div></a>
+                    <a href="https://janitorai.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="JanitorAI" data-tool-rank="11"><h3 class="tool-card__name"><span class="rank-badge">11</span> JanitorAI</h3><p class="tool-card__description">Janitor AI allows users to create NSFW fictional chatbot characters.</p><div class="tool-card__tags"><span class="tag">NSFW chatbot</span><span class="tag">Fictional characters</span><span class="tag">AI character creation</span><span class="tag">Role-playing</span><span class="tag">Large language models</span></div></a>
+                    <a href="https://shutterstock.com?utm_source=toolify" target="_blank" class="tool-card" data-tool-name="Shutterstock" data-tool-rank="12"><h3 class="tool-card__name"><span class="rank-badge">12</span> Shutterstock</h3><p class="tool-card__description">Shutterstock provides royalty-free stock images, videos, and music with AI-powered creative tools.</p><div class="tool-card__tags"><span class="tag">Stock images</span><span class="tag">Stock photos</span><span class="tag">Vectors</span><span class="tag">Stock video</span><span class="tag">Stock music</span><span class="tag">Royalty-free</span><span class="tag">AI content generation</span><span class="tag">Design tools</span><span class="tag">Creative assets</span></div></a>
+                </div>
                 <div id="loadingIndicator" class="loading-indicator" style="display: none;">Loading...</div>
             </section>
         </div>
     </main>
     
-    <footer class="footer"></footer>
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 My Tool Toolshed. All rights reserved.</p>
+        </div>
+    </footer>
 
-    <div id="feedbackModalOverlay" class="modal-overlay"></div>
+    <button id="openFeedbackBtn" class="floating-btn">Feedback</button>
+
+    <div id="feedbackModalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <span id="closeFeedbackBtn" class="close-btn">&times;</span>
+            <h2 class="section-title" style="margin-bottom: 1.5rem;">Leave a Message</h2>
+            <form id="feedbackForm" class="feedback-form">
+                <div class="form-group-inline">
+                    <input type="text" id="feedbackName" name="name" class="form-input" placeholder="Your Name (Optional)">
+                    <input type="email" id="feedbackEmail" name="email" class="form-input" placeholder="Your Email (Optional)">
+                </div>
+                <div class="form-group">
+                    <textarea id="feedbackMessage" name="message" class="form-textarea" placeholder="Your message or feedback..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="feedbackSubmitBtn" class="form-submit-button">Submit Feedback</button>
+                </div>
+                <div id="formStatus" class="form-status-message"></div>
+            </form>
+        </div>
+    </div>
     
     <script src="./js/main.js"></script>
 </body>
