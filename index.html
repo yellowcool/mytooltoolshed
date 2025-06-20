@@ -32,7 +32,7 @@
         <div class="container">
             <h1 class="hero-title">My Tool Toolshed</h1>
             <p class="hero-subtitle">Beyond Keywords. Describe your goal, get the right AI tool.</p>
-            <form class="search-bar" role="search">
+            <form id="searchForm" class="search-bar" role="search">
                 <input type="search" id="searchInput" class="search-bar__input" placeholder="Describe your need... e.g., 'design a logo for my new coffee shop'">
                 <button type="submit" class="search-bar__button">Search</button>
             </form>
@@ -73,9 +73,9 @@
         <div class="modal-content">
             <span id="closeFeedbackBtn" class="close-btn">&times;</span>
             <h2 class="section-title">Leave a Message</h2>
-            <form id="feedbackForm" class="feedback-form">
+            <form id="feedbackForm">
                 <div class="form-group-inline">
-                    <input type="text" id="feedbackName" name="name" class="form-input" placeholder="Your Name (Optional)">
+                    <input type="text" id="feedbackName" class="form-input" placeholder="Your Name (Optional)">
                     <input type="email" id="feedbackEmail" name="email" class="form-input" placeholder="Your Email (Optional)">
                 </div>
                 <div class="form-group">
