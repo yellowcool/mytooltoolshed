@@ -1,70 +1,148 @@
-/* --- CSS Variables and Global Resets (Unchanged) --- */
+/* --- NEW THEME: Apple-Inspired Minimalist Dark --- */
+
+/* --- CSS Variables --- */
 :root {
-    --primary-color: #3B82F6;
-    --background-color: #0D1117;
-    --container-bg-color: #161B22;
-    --text-color: #E6EDF3;
-    --text-color-muted: #8B949E;
-    --border-color: #30363D;
-    --font-family: 'Inter', sans-serif;
+    --background-color: #000000;
+    --container-bg-color: #1a1a1a;
+    --text-color: #f5f5f7;
+    --text-color-muted: #a1a1a6;
+    --border-color: #424245;
+    --accent-color: #2997FF; /* Apple's classic blue */
+    --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
+
+/* --- Global Resets & Base Styles --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { 
-    font-family: var(--font-family); 
+    font-family: var(--font-family-sans); 
     color: var(--text-color); 
     background-color: var(--background-color); 
-    line-height: 1.6; 
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
-.container { max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 15px; padding-right: 15px; }
-h1, h2, h3 { font-family: var(--font-family); color: var(--text-color); font-weight: 700; }
+.container { max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 20px; padding-right: 20px; }
 
-/* --- NEW: Hero Section Styles --- */
+/* --- NEW Hero Section Styles --- */
 .hero-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     text-align: center;
-    padding: 6rem 1rem;
-    background: linear-gradient(145deg, var(--background-color) 0%, var(--container-bg-color) 100%);
-    border-bottom: 1px solid var(--border-color);
+    padding: 8rem 1rem;
 }
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     margin-bottom: 1rem;
 }
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     color: var(--text-color-muted);
-    max-width: 650px;
-    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin: 0 auto 3rem auto;
 }
 .hero-section .search-bar {
-    max-width: 700px;
-    width: 100%;
-    transform: scale(1.1); /* Make search bar slightly larger */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 650px;
+    margin: 0 auto;
+    border-radius: 12px;
+    background-color: var(--container-bg-color);
+    border: 1px solid var(--border-color);
+}
+.hero-section .search-bar__input {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+}
+.hero-section .search-bar__button {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    background-color: var(--accent-color);
+}
+.hero-section .search-bar__button:hover {
+    background-color: #0070E0;
 }
 
 /* --- Main Content & Sections --- */
 .main-content { padding-top: 3rem; padding-bottom: 3rem; }
-.section-title { text-align: center; margin-bottom: 2rem; font-size: 2.2rem; }
+.section-title {
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
 
-/* --- Search Bar (some adjustments might be needed if you keep the old one) --- */
-.search-bar { display: flex; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background-color: var(--container-bg-color); }
-.search-bar__input { flex-grow: 1; background: transparent; color: var(--text-color); border: none; padding: 0.85rem 1.25rem; font-size: 1.1rem; }
-.search-bar__input::placeholder { color: var(--text-color-muted); }
-.search-bar__input:focus { outline: 2px solid var(--primary-color); }
-.search-bar__button { background-color: var(--primary-color); color: white; border: none; padding: 0.85rem 2rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }
-.search-bar__button:hover { background-color: #2563EB; }
+/* --- Tools Section --- */
+.tools-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+.tool-card {
+    background-color: var(--container-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.tool-card:hover {
+    transform: translateY(-5px);
+    background-color: #222222;
+}
+.tool-card__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-color);
+}
+.rank-badge {
+    background-color: var(--border-color);
+    color: var(--text-color-muted);
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.tool-card__description {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    color: var(--text-color-muted);
+}
+.tool-card__tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+    background-color: #333333;
+    color: var(--text-color-muted);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.loading-indicator { text-align: center; padding: 3rem; font-size: 1.1rem; color: var(--text-color-muted); }
 
-/* --- Tools Section (Unchanged) --- */
-.tools-section { padding-top: 2rem; } /* Added padding for spacing */
-.tools-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
-/* ... All other .tool-card, .tag, .loading-indicator styles remain the same ... */
-
-/* --- Floating Button & Modal Styles (Unchanged) --- */
-/* ... All modal and floating button styles remain the same ... */
-
-/* --- Footer (Unchanged) --- */
-.footer { background-color: var(--container-bg-color); border-top: 1px solid var(--border-color); text-align: center; padding: 2rem 0; font-size: 0.9rem; color: var(--text-color-muted); }
+/* --- Floating Button & Modal Styles --- */
+.floating-btn {
+    background-color: var(--accent-color);
+    /* ... other styles are fine ... */
+}
+.modal-content {
+    background-color: #111;
+    border: 1px solid var(--border-color);
+    /* ... other styles are fine ... */
+}
+.form-input, .form-textarea {
+    background-color: #000;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    /* ... other styles are fine ... */
+}
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-color-muted); }
+.form-submit-button {
+    background-color: var(--accent-color);
+    color: white;
+    /* ... other styles are fine ... */
+}
+/* ... etc ... */
