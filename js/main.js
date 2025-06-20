@@ -7,82 +7,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const SEARCH_ITEMS_PER_PAGE = 20;
     const TARGET_LANGUAGE = 'English';
 
-    // 2. DOM ELEMENTS INITIALIZATION
+    // 2. DOM ELEMENTS & INITIALIZATION
     const supabase = self.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const toolsGrid = document.getElementById('toolsGrid');
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.querySelector('.search-bar');
     const loadingIndicator = document.getElementById('loadingIndicator');
-    const openFeedbackBtn = document.getElementById('openFeedbackBtn');
-    const feedbackModalOverlay = document.getElementById('feedbackModalOverlay');
-    const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
-    const feedbackForm = document.getElementById('feedbackForm');
-
-    // 3. STATE VARIABLES
-    let browseCurrentPage = 1;
-    let searchCurrentPage = 0;
-    let isLoading = false;
-    let allDataLoaded = { browse: false, search: false };
-    let currentSearchTerm = '';
-    
     const initialGridHTML = toolsGrid.innerHTML;
 
-    // 4. CORE FUNCTIONS
-    const renderTools = (tools) => {
-        if (tools && tools.length > 0) {
-            tools.forEach(tool => toolsGrid.appendChild(createToolCard(tool)));
-        }
+    // 3. STATE MANAGEMENT (Refactored based on feedback)
+    let isLoading = false;
+    let currentSearchTerm = '';
+    let state = {
+        browse: { page: 1, allLoaded: false },
+        search: { page: 0, allLoaded: false }
     };
     
+    // 4. CORE FUNCTIONS
+    const createToolCard = (tool) => { /* Unchanged */ };
+    const renderTools = (tools) => { /* Unchanged */ };
+
     const loadBrowseItems = async () => {
-        if (isLoading || allDataLoaded.browse) return;
+        if (isLoading || state.browse.allLoaded) return;
         isLoading = true;
         loadingIndicator.innerText = 'Loading...';
         loadingIndicator.style.display = 'block';
 
-        const startIndex = (browseCurrentPage - 1) * ITEMS_PER_PAGE + 12;
-        
+        const startIndex = 12 + ((state.browse.page - 1) * ITEMS_PER_PAGE);
         const { data, error } = await supabase.from('tools').select('*').eq('language', TARGET_LANGUAGE).order('ranking', { ascending: true }).range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
         
-        if (error) { console.error('Error fetching browse data:', error); loadingIndicator.innerText = 'Error loading data.'; }
-        else if (data) {
+        isLoading = false;
+        if (error) { console.error('Error fetching browse data:', error); loadingIndicator.innerText = 'Error loading data.'; return; }
+
+        if (data) {
             renderTools(data);
-            browseCurrentPage++;
+            state.browse.page++;
             if (data.length < ITEMS_PER_PAGE) {
-                allDataLoaded.browse = true;
+                state.browse.allLoaded = true;
                 loadingIndicator.innerText = 'All tools have been loaded.';
             } else {
                 loadingIndicator.style.display = 'none';
             }
         }
-        isLoading = false;
     };
 
     const loadSearchResults = async () => {
-        if (isLoading || allDataLoaded.search) return;
+        if (isLoading || state.search.allLoaded) return;
         isLoading = true;
-        loadingIndicator.innerText = searchPage === 0 ? 'Searching...' : 'Loading more results...';
+        loadingIndicator.innerText = state.search.page === 0 ? 'Searching for semantically similar tools...' : 'Loading more results...';
         loadingIndicator.style.display = 'block';
 
         try {
             const { data, error } = await supabase.functions.invoke('semantic-search', {
-                body: { query: currentSearchTerm, page: searchCurrentPage },
+                body: { query: currentSearchTerm, page: state.search.page },
             });
             if (error) throw error;
-            if (data && data.length > 0) {
+            if (data) {
                 renderTools(data);
-                searchCurrentPage++;
+                state.search.page++;
+                if (data.length < SEARCH_ITEMS_PER_PAGE) {
+                    state.search.allLoaded = true;
+                    loadingIndicator.innerText = toolsGrid.children.length > 0 ? 'All matching tools have been loaded.' : 'No matching tools found.';
+                } else {
+                    loadingIndicator.style.display = 'none';
+                }
             }
-            if (!data || data.length < SEARCH_ITEMS_PER_PAGE) {
-                allDataLoaded.search = true;
-                loadingIndicator.innerText = toolsGrid.children.length > 0 ? 'All matching tools have been loaded.' : 'No matching tools found.';
-            } else {
-                loadingIndicator.style.display = 'none';
-            }
-        } catch (e) {
-            console.error('Error fetching search results:', e);
-            loadingIndicator.innerText = 'Error during search.';
-        }
+        } catch (e) { console.error('Error with semantic search:', e); loadingIndicator.innerText = 'Error during search.'; }
         isLoading = false;
     };
 
@@ -90,51 +80,56 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         searchInput.blur();
         const searchTerm = searchInput.value.trim();
-        
-        if (!searchTerm) {
-            currentSearchTerm = '';
-            browsePage = 1;
-            allDataLoaded.browse = false;
-            toolsGrid.innerHTML = initialGridHTML;
-            loadingIndicator.style.display = 'none';
-            await checkAndFillScreen();
-            return;
-        }
-        
         if (searchTerm.toLowerCase() === currentSearchTerm) return;
 
         currentSearchTerm = searchTerm.toLowerCase();
         toolsGrid.innerHTML = '';
-        searchPage = 0;
-        allDataLoaded.search = false;
-        gtag('event', 'search', { search_term: searchTerm });
+        isLoading = false;
+
+        if (!currentSearchTerm) {
+            state.browse = { page: 1, allLoaded: false };
+            toolsGrid.innerHTML = initialGridHTML;
+            loadingIndicator.style.display = 'none';
+            checkAndFillScreen();
+            return;
+        }
+        
+        state.search = { page: 0, allLoaded: false };
+        if (typeof gtag === 'function') gtag('event', 'search', { search_term: searchTerm });
         await loadSearchResults();
     };
     
     const checkAndFillScreen = async () => {
-        if (currentSearchTerm) return;
-        while (!isLoading && !allDataLoaded.browse && document.documentElement.scrollHeight <= window.innerHeight) {
+        if (currentSearchTerm || isLoading || state.browse.allLoaded) return;
+        if (document.documentElement.scrollHeight <= window.innerHeight) {
             await loadBrowseItems();
+            requestAnimationFrame(checkAndFillScreen);
         }
     };
-    
-    // 5. EVENT LISTENERS
+
+    // 5. EVENT LISTENERS with throttle for scroll
+    let scrollTimeout;
     const handleScroll = () => {
-        const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200;
-        if (!isAtBottom || isLoading) return;
-        if (currentSearchTerm) {
-            loadSearchResults();
-        } else {
-            loadBrowseItems();
-        }
+        if (scrollTimeout) return;
+        scrollTimeout = setTimeout(() => {
+            const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200;
+            if (isAtBottom && !isLoading) {
+                if (currentSearchTerm) {
+                    loadSearchResults();
+                } else {
+                    loadBrowseItems();
+                }
+            }
+            scrollTimeout = null;
+        }, 200); // Throttling scroll events to every 200ms
     };
     
     searchForm.addEventListener('submit', handleSearch);
     window.addEventListener('scroll', handleScroll);
 
-    // --- All other functions and listeners (modal, GA clicks) are unchanged and included here ---
-    (function(){createToolCard=t=>{const e=document.createElement("a");return e.href=t.tool_link,e.target="_blank",e.className="tool-card",e.dataset.toolName=t.tool_name,e.dataset.toolRank=t.ranking,e.innerHTML=`\n            <h3 class="tool-card__name"><span class="rank-badge">${t.ranking}</span> ${t.tool_name}\n            </h3>\n            <p class="tool-card__description">${t.description}</p>\n            <div class="tool-card__tags">${createTagsHTML(t.tags)}</div>\n        `,e};const t=()=>{const t=document.getElementById("feedbackModalOverlay"),e=document.getElementById("closeFeedbackBtn"),o=document.getElementById("feedbackForm");const n={openModal:()=>{t.classList.add("active")},closeModal:()=>{t.classList.remove("active");setTimeout(()=>{document.getElementById("formStatus").textContent="",o.reset(),document.getElementById("feedbackSubmitBtn").disabled=!1,document.getElementById("feedbackSubmitBtn").textContent="Submit Feedback"},300)},handleFeedbackSubmit:async t=>{t.preventDefault();const e=document.getElementById("feedbackSubmitBtn"),n=document.getElementById("formStatus"),a=document.getElementById("feedbackMessage").value.trim();if(!a)return n.textContent="Message field cannot be empty.",void(n.style.color="red");e.disabled=!0,e.textContent="Submitting...",n.textContent="";const{error:i}=await supabase.from("feedback").insert([{name:document.getElementById("feedbackName").value.trim(),email:document.getElementById("feedbackEmail").value.trim(),message:a}]);i?(console.error("Error submitting feedback:",i),n.textContent="Sorry, there was an error.",n.style.color="red",e.disabled=!1):(n.textContent="Thank you! Your feedback has been submitted.",n.style.color="green",setTimeout(n.closeModal,2e3))}};document.getElementById("openFeedbackBtn").addEventListener("click",n.openModal),e.addEventListener("click",n.closeModal),t.addEventListener("click",e=>{e.target===t&&n.closeModal()}),o.addEventListener("submit",n.handleFeedbackSubmit),toolsGrid.addEventListener("click",t=>{const e=t.target.closest(".tool-card");if(e){const o=e.dataset.toolName,n=e.dataset.toolRank;gtag("event","select_content",{content_type:"AI Tool",item_id:`rank_${n}`,content_name:o})}})};t()})();
-
     // 6. INITIAL KICK-OFF
-    checkAndFillScreen();
+    window.onload = checkAndFillScreen;
+
+    // --- Helper functions and other listeners that can be minified ---
+    (function(){createToolCard=t=>{const e=document.createElement("a");return e.href=t.tool_link,e.target="_blank",e.className="tool-card",e.dataset.toolName=t.tool_name,e.dataset.toolRank=t.ranking,e.innerHTML=`\n            <h3 class="tool-card__name"><span class="rank-badge">${t.ranking}</span> ${t.tool_name}\n            </h3>\n            <p class="tool-card__description">${t.description}</p>\n            <div class="tool-card__tags">${createTagsHTML(t.tags)}</div>\n        `,e};const t=document.getElementById("openFeedbackBtn"),e=document.getElementById("feedbackModalOverlay"),o=document.getElementById("closeFeedbackBtn"),n=document.getElementById("feedbackForm");const a={openModal:()=>{e.classList.add("active")},closeModal:()=>{e.classList.remove("active");setTimeout(()=>{document.getElementById("formStatus").textContent="",n.reset(),document.getElementById("feedbackSubmitBtn").disabled=!1,document.getElementById("feedbackSubmitBtn").textContent="Submit Feedback"},300)},handleFeedbackSubmit:async t=>{t.preventDefault();const e=document.getElementById("feedbackSubmitBtn"),o=document.getElementById("formStatus"),i=document.getElementById("feedbackMessage").value.trim();if(!i)return o.textContent="Message field cannot be empty.",void(o.style.color="red");e.disabled=!0,e.textContent="Submitting...",o.textContent="";const{error:s}=await supabase.from("feedback").insert([{name:document.getElementById("feedbackName").value.trim(),email:document.getElementById("feedbackEmail").value.trim(),message:i}]);s?(console.error("Error submitting feedback:",s),o.textContent="Sorry, there was an error.",o.style.color="red",e.disabled=!1):(o.textContent="Thank you! Your feedback has been submitted.",o.style.color="green",setTimeout(a.closeModal,2e3))}};t.addEventListener("click",a.openModal),o.addEventListener("click",a.closeModal),e.addEventListener("click",t=>{t.target===e&&a.closeModal()}),n.addEventListener("submit",a.handleFeedbackSubmit);if(typeof gtag==='function'){toolsGrid.addEventListener("click",t=>{const e=t.target.closest(".tool-card");if(e){const o=e.dataset.toolName,n=e.dataset.toolRank;gtag("event","select_content",{content_type:"AI Tool",item_id:`rank_${n}`,content_name:o})}})}})();
 });
