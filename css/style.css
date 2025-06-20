@@ -1,120 +1,128 @@
-/* --- NEW THEME: Apple-Inspired Minimalist Dark --- */
+/* --- NEW THEME: Apple-Inspired Minimalist Light --- */
 
-/* --- CSS Variables --- */
 :root {
-    --background-color: #000000;
-    --container-bg-color: #1a1a1a;
-    --text-color: #f5f5f7;
-    --text-color-muted: #a1a1a6;
-    --border-color: #424245;
-    --accent-color: #2997FF; /* Apple's classic blue */
-    --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    --background-color: #ffffff;
+    --container-bg-color: #f5f5f7;
+    --text-color: #1d1d1f; /* Near Black */
+    --text-color-muted: #6e6e73; /* Grey */
+    --border-color: #d2d2d7;
+    --accent-color: #0066cc; /* Apple Blue */
+    --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* --- Global Resets & Base Styles --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { 
     font-family: var(--font-family-sans); 
     color: var(--text-color); 
     background-color: var(--background-color); 
-    line-height: 1.65;
+    line-height: 1.6; 
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 .container { max-width: 1200px; margin-left: auto; margin-right: auto; padding-left: 20px; padding-right: 20px; }
+h1, h2, h3 { font-family: var(--font-family-sans); color: var(--text-color); }
 
-/* --- NEW Hero Section Styles --- */
+/* --- Hero Section --- */
 .hero-section {
     text-align: center;
-    padding: 8rem 1rem;
+    padding: 6rem 1rem 4rem 1rem;
 }
 .hero-title {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     margin-bottom: 1rem;
 }
 .hero-subtitle {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     color: var(--text-color-muted);
+    max-width: 550px;
+    margin: 0 auto 2.5rem auto;
+}
+.search-bar {
+    display: flex;
     max-width: 600px;
-    margin: 0 auto 3rem auto;
-}
-.hero-section .search-bar {
-    max-width: 650px;
     margin: 0 auto;
-    border-radius: 12px;
+    border-radius: 10px;
     background-color: var(--container-bg-color);
-    border: 1px solid var(--border-color);
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-.hero-section .search-bar__input {
-    padding: 1rem 1.5rem;
+.search-bar__input {
+    flex-grow: 1;
+    background: transparent;
+    color: var(--text-color);
+    border: none;
+    padding: 0.85rem 1.25rem;
     font-size: 1.1rem;
 }
-.hero-section .search-bar__button {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
+.search-bar__input::placeholder { color: var(--text-color-muted); }
+.search-bar__input:focus { outline: none; }
+.search-bar__button {
     background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0 1.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px;
+    transition: background-color 0.2s ease;
 }
-.hero-section .search-bar__button:hover {
-    background-color: #0070E0;
-}
+.search-bar__button:hover { background-color: #0056b3; }
 
-/* --- Main Content & Sections --- */
-.main-content { padding-top: 3rem; padding-bottom: 3rem; }
+/* --- Main Content & Tools Section --- */
+.main-content { padding-top: 2rem; padding-bottom: 4rem; }
 .section-title {
     text-align: center;
     margin-bottom: 3rem;
     font-size: 2.5rem;
     font-weight: 600;
-    letter-spacing: -0.01em;
 }
-
-/* --- Tools Section --- */
 .tools-grid {
     display: grid;
-    gap: 2rem;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
 }
 .tool-card {
-    background-color: var(--container-bg-color);
+    background-color: #ffffff;
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: 18px;
+    padding: 1.5rem;
     text-decoration: none;
     color: var(--text-color);
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .tool-card:hover {
     transform: translateY(-5px);
-    background-color: #222222;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 .tool-card__name {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 600;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
-    gap: 12px;
-    color: var(--text-color);
+    gap: 10px;
 }
 .rank-badge {
-    background-color: var(--border-color);
+    background-color: var(--container-bg-color);
     color: var(--text-color-muted);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     padding: 4px 8px;
     border-radius: 6px;
-    font-weight: 600;
+    font-weight: 500;
 }
 .tool-card__description {
     font-size: 1rem;
     margin-bottom: 1.5rem;
     flex-grow: 1;
     color: var(--text-color-muted);
+    line-height: 1.5;
 }
 .tool-card__tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .tag {
-    background-color: #333333;
+    background-color: var(--container-bg-color);
     color: var(--text-color-muted);
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
@@ -125,24 +133,33 @@ body {
 
 /* --- Floating Button & Modal Styles --- */
 .floating-btn {
-    background-color: var(--accent-color);
+    background-color: #333;
+    color: white;
     /* ... other styles are fine ... */
 }
 .modal-content {
-    background-color: #111;
-    border: 1px solid var(--border-color);
+    background-color: #f5f5f7;
+    border: none;
     /* ... other styles are fine ... */
 }
 .form-input, .form-textarea {
-    background-color: #000;
+    background-color: #fff;
     border: 1px solid var(--border-color);
     color: var(--text-color);
     /* ... other styles are fine ... */
 }
-.form-input::placeholder, .form-textarea::placeholder { color: var(--text-color-muted); }
 .form-submit-button {
     background-color: var(--accent-color);
     color: white;
     /* ... other styles are fine ... */
 }
 /* ... etc ... */
+
+/* --- Footer --- */
+.footer {
+    background-color: var(--container-bg-color);
+    text-align: center;
+    padding: 2.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-color-muted);
+}
