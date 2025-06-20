@@ -12,23 +12,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.querySelector('.search-bar');
     const loadingIndicator = document.getElementById('loadingIndicator');
-    // ... all other elements for modal ...
+    const openFeedbackBtn = document.getElementById('openFeedbackBtn');
+    const feedbackModalOverlay = document.getElementById('feedbackModalOverlay');
+    const closeFeedbackBtn = document.getElementById('closeFeedbackBtn');
+    const feedbackForm = document.getElementById('feedbackForm');
 
     // 3. STATE VARIABLES
-    let currentPage = 1; 
+    let currentPage = 1;
     let isLoading = false;
     let allDataLoaded = false;
     let currentSearchTerm = '';
     
     // 4. CORE FUNCTIONS
-    // This function loads tools for standard Browse and infinite scroll
+    const createTagsHTML = (tagsString) => {
+        if (!tagsString) return '';
+        return tagsString.split(',').map(tag => `<span class="tag">${tag.trim()}</span>`).join('');
+    };
+
+    const createToolCard = (tool) => {
+        const card = document.createElement('a');
+        card.href = tool.tool_link;
+        card.target = '_blank';
+        card.className = 'tool-card';
+        card.dataset.toolName = tool.tool_name;
+        card.dataset.toolRank = tool.ranking;
+        card.innerHTML = `
+            <h3 class="tool-card__name">
+                <span class="rank-badge">${tool.ranking}</span> ${tool.tool_name}
+            </h3>
+            <p class="tool-card__description">${tool.description}</p>
+            <div class="tool-card__tags">${createTagsHTML(tool.tags)}</div>
+        `;
+        return card;
+    };
+    
+    const renderTools = (tools) => {
+        if (tools && tools.length > 0) {
+            tools.forEach(tool => {
+                toolsGrid.appendChild(createToolCard(tool));
+            });
+        }
+    };
+    
     const loadBrowseItems = async () => {
         if (isLoading || allDataLoaded) return;
-        
         isLoading = true;
         loadingIndicator.innerText = 'Loading...';
         loadingIndicator.style.display = 'block';
-
         const startIndex = currentPage * ITEMS_PER_PAGE;
         const { data, error } = await supabase
             .from('tools')
@@ -36,20 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .eq('language', TARGET_LANGUAGE)
             .order('ranking', { ascending: true })
             .range(startIndex, startIndex + ITEMS_PER_PAGE - 1);
-        
         isLoading = false;
-
         if (error) {
             console.error('Error fetching browse data:', error);
             loadingIndicator.innerText = 'Error loading data.';
             return;
         }
-
         if (data && data.length > 0) {
             renderTools(data);
             currentPage++;
         }
-
         if (!data || data.length < ITEMS_PER_PAGE) {
             allDataLoaded = true;
             loadingIndicator.innerText = 'All tools have been loaded.';
@@ -57,45 +83,108 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingIndicator.style.display = 'none';
         }
     };
-    
-    // All other functions like handleSearch, modal logic, etc. are unchanged
-    // ...
 
-    // --- 5. THE NEW, ROBUST LOADING LOGIC ---
-    // This function will check if the screen is full and load items if needed.
-    // It will call itself recursively until the condition is met.
-    const fillScreen = async () => {
-        if (isLoading || allDataLoaded || currentSearchTerm) return;
-        
-        // Check if the document's content is shorter than the window's visible area
-        if (document.documentElement.scrollHeight <= window.innerHeight) {
-            await loadBrowseItems();
-            // After loading, wait for the next animation frame and check again.
-            // This is a robust way to handle dynamic content height.
-            requestAnimationFrame(fillScreen);
+    const handleSearch = async () => {
+        const searchTerm = searchInput.value.trim();
+        currentSearchTerm = searchTerm.toLowerCase();
+        toolsGrid.innerHTML = '';
+        isLoading = false;
+        if (!currentSearchTerm) {
+            window.location.reload(); // Cleanest way to restore pre-rendered state
+            return;
+        }
+        allDataLoaded = true;
+        loadingIndicator.innerText = 'Searching for semantically similar tools...';
+        loadingIndicator.style.display = 'block';
+        gtag('event', 'search', { search_term: searchTerm });
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: searchTerm }),
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Request to worker failed');
+            }
+            const data = await response.json();
+            renderTools(data);
+            loadingIndicator.innerText = data && data.length > 0 ? `Found ${data.length} matching tools.` : 'No matching tools found.';
+        } catch (error) {
+            console.error('Error with semantic search:', error);
+            loadingIndicator.innerText = 'Error during search. Please try again.';
         }
     };
 
-
-    // --- 6. EVENT LISTENERS ---
-    const handleScroll = () => {
-        // Trigger when user scrolls to the bottom 200px of the page
+    const modalLogicFunctions = {
+        openModal: () => { feedbackModalOverlay.classList.add('active'); },
+        closeModal: () => {
+            feedbackModalOverlay.classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('formStatus').textContent = '';
+                document.getElementById('feedbackForm').reset();
+                document.getElementById('feedbackSubmitBtn').disabled = false;
+                document.getElementById('feedbackSubmitBtn').textContent = 'Submit Feedback';
+            }, 300);
+        },
+        handleFeedbackSubmit: async (event) => {
+            event.preventDefault();
+            const feedbackSubmitBtn = document.getElementById('feedbackSubmitBtn');
+            const formStatus = document.getElementById('formStatus');
+            const message = document.getElementById('feedbackMessage').value.trim();
+            if (!message) {
+                formStatus.textContent = 'Message field cannot be empty.';
+                return;
+            }
+            feedbackSubmitBtn.disabled = true;
+            feedbackSubmitBtn.textContent = 'Submitting...';
+            const { error } = await supabase.from('feedback').insert([{ 
+                name: document.getElementById('feedbackName').value.trim(), 
+                email: document.getElementById('feedbackEmail').value.trim(), 
+                message: message 
+            }]);
+            if (error) {
+                formStatus.textContent = 'Sorry, there was an error.';
+                feedbackSubmitBtn.disabled = false;
+            } else {
+                formStatus.textContent = 'Thank you! Your feedback has been submitted.';
+                setTimeout(modalLogicFunctions.closeModal, 2000);
+            }
+        }
+    };
+    
+    // --- EVENT LISTENERS ---
+    const checkAndLoadMore = async () => {
+        if (isLoading || allDataLoaded || currentSearchTerm) return;
+        const shouldLoad = document.documentElement.scrollHeight <= window.innerHeight;
+        if (shouldLoad) {
+            await loadBrowseItems();
+            requestAnimationFrame(checkAndLoadMore);
+        }
+    };
+    
+    window.addEventListener('scroll', () => {
         if (!currentSearchTerm && window.innerHeight + window.scrollY >= document.documentElement.offsetHeight - 200) {
             loadBrowseItems();
         }
-    };
+    });
     
-    window.addEventListener('scroll', handleScroll);
-    // All other event listeners remain the same
-    // ...
+    searchForm.addEventListener('submit', (e) => { e.preventDefault(); handleSearch(); });
+    openFeedbackBtn.addEventListener('click', modalLogicFunctions.openModal);
+    closeFeedbackBtn.addEventListener('click', modalLogicFunctions.closeModal);
+    feedbackModalOverlay.addEventListener('click', (event) => { if (event.target === event.currentTarget) { modalLogicFunctions.closeModal(); }});
+    feedbackForm.addEventListener('submit', modalLogicFunctions.handleFeedbackSubmit);
+    toolsGrid.addEventListener('click', (event) => {
+        const card = event.target.closest('.tool-card');
+        if (card) {
+            const toolName = card.dataset.toolName;
+            const toolRank = card.dataset.toolRank;
+            gtag('event', 'select_content', { content_type: 'AI Tool', item_id: `rank_${toolRank}`, content_name: toolName });
+        }
+    });
 
-    // --- 7. INITIAL KICK-OFF ---
-    // After the page loads, run the initial fill-screen check.
-    // We use window.onload to be extra sure all assets like images are loaded and heights are correct.
+    // --- INITIAL KICK-OFF ---
     window.onload = () => {
-        fillScreen();
+        checkAndLoadMore();
     };
-
-    // --- Helper functions and other listeners for brevity ---
-    (function(){const t=a=>a?a.split(",").map(a=>`<span class="tag">${a.trim()}</span>`).join(""):"" ,e=a=>{const e=document.createElement("a");return e.href=a.tool_link,e.target="_blank",e.className="tool-card",e.dataset.toolName=a.tool_name,e.dataset.toolRank=a.ranking,e.innerHTML=`\n            <h3 class="tool-card__name">\n                <span class="rank-badge">${a.ranking}</span> ${a.tool_name}\n            </h3>\n            <p class="tool-card__description">${a.description}</p>\n            <div class="tool-card__tags">${t(a.tags)}</div>\n        `,e};createToolCard=e,renderTools=t=>{t&&t.length>0&&t.forEach(t=>{toolsGrid.appendChild(createToolCard(t))})};const o=async()=>{const t=searchInput.value.trim();if(currentSearchTerm=t.toLowerCase(),toolsGrid.innerHTML="",isLoading=!1,!currentSearchTerm)return currentPage=1,allDataLoaded=!1,location.reload(),void(loadingIndicator.style.display="none");allDataLoaded=!0,loadingIndicator.innerText="Searching for semantically similar tools...",loadingIndicator.style.display="block",gtag("event","search",{search_term:t});try{const e=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({query:t})});if(!e.ok){const n=await e.json();throw new Error(n.error||"Request to worker failed")}const a=await e.json();renderTools(a),loadingIndicator.innerText=a&&a.length>0?`Found ${a.length} matching tools.`:"No matching tools found."}catch(e){console.error("Error with semantic search:",e),loadingIndicator.innerText="Error during search. Please try again."}};handleSearch=o;const n={};const a=document.getElementById("openFeedbackBtn"),i=document.getElementById("feedbackModalOverlay"),s=document.getElementById("closeFeedbackBtn"),c=document.getElementById("feedbackForm");n.openModal=()=>{i.classList.add("active")},n.closeModal=()=>{i.classList.remove("active");const t=document.getElementById("formStatus"),o=document.getElementById("feedbackSubmitBtn");setTimeout(()=>{t.textContent="",t.style.color="",c.reset(),o.disabled=!1,o.textContent="Submit Feedback"},300)},n.handleFeedbackSubmit=async t=>{t.preventDefault();const a=document.getElementById("feedbackName").value.trim(),i=document.getElementById("feedbackEmail").value.trim(),s=document.getElementById("feedbackMessage").value.trim(),r=document.getElementById("formStatus"),l=document.getElementById("feedbackSubmitBtn");if(!s)return r.textContent="Message field cannot be empty.",void(r.style.color="red");l.disabled=!0,l.textContent="Submitting...",r.textContent="";const{data:m,error:u}=await supabase.from("feedback").insert([{name:a,email:i,message:s}]);u?(console.error("Error submitting feedback:",u),r.textContent="Sorry, there was an error. Please try again.",r.style.color="red",l.disabled=!1):(r.textContent="Thank you! Your feedback has been submitted successfully.",r.style.color="green",setTimeout(n.closeModal,2e3))},modalLogicFunctions=n,searchForm.addEventListener("submit",t=>{t.preventDefault(),handleSearch()}),a.addEventListener("click",n.openModal),s.addEventListener("click",n.closeModal),i.addEventListener("click",t=>{t.target===i&&n.closeModal()}),c.addEventListener("submit",n.handleFeedbackSubmit),toolsGrid.addEventListener("click",a=>{const t=a.target.closest(".tool-card");if(t){const o=t.dataset.toolName,e=t.dataset.toolRank;gtag("event","select_content",{content_type:"AI Tool",item_id:`rank_${e}`,content_name:o})}})})();
 });
